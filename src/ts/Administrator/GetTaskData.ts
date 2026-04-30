@@ -30,7 +30,7 @@ export const getDatosTarea = async (taskId: number): Promise<TaskData | null> =>
     }
 
     // Make a GET request to the API to fetch task data using the task_id
-    const response = await axios.get(`http://localhost:3000/api/tasks/${taskId}`, {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the authorization token in the request headers
         'Content-Type': 'application/json',  // Specify the content type as JSON

@@ -5,7 +5,7 @@ export const updateProfilePhoto = async (image: File): Promise<string> => {
   try {
     // Retrieve the authentication token from localStorage
     const token = localStorage.getItem('authToken');
-    
+
     if (!token) {
       throw new Error('No se encontró el token de autenticación.');
     }
@@ -22,7 +22,7 @@ export const updateProfilePhoto = async (image: File): Promise<string> => {
 
     // Hacer la solicitud PUT para actualizar la foto de perfil
     const response = await axios.put(
-      'http://localhost:3000/auth/updateProfilePhoto',
+      `${import.meta.env.VITE_API_URL}/updateProfilePhoto`,
       formData,
       {
         headers: {
@@ -39,7 +39,7 @@ export const updateProfilePhoto = async (image: File): Promise<string> => {
 
     // Retornar el mensaje de éxito desde la respuesta
     return response.data.message;
-    
+
   } catch (error: any) {
     // Manejo de errores más detallado
     if (axios.isAxiosError(error)) {

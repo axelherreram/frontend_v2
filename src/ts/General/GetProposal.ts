@@ -22,7 +22,7 @@ export const getPropuesta = async (userId: number): Promise<Propuesta | null> =>
     }
 
     // Make a GET request to the specified URL with the correct parameters
-    const response = await axios.get(`http://localhost:3000/api/thesis-submission/${userId}`, {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/thesis-submission/${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Include authentication token in the request headers
         'Content-Type': 'application/json', // Specify the content type as JSON

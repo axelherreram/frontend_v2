@@ -22,7 +22,7 @@ export const getStudents = async (
     }
 
     const response = await axios.get(
-      `http://localhost:3000/api/sedes/${sedeId}/cursos/${courseId}/estudiantes/${nameYear}`,
+      `${import.meta.env.VITE_API_URL}/sedes/${sedeId}/cursos/${courseId}/estudiantes/${nameYear}`,
       {
         headers: {
           'Authorization': `Bearer ${token}`,

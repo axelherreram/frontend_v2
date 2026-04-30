@@ -25,7 +25,7 @@ export const getSedeComplete = async (
         }
 
         // Define the URL for the GET request, using the provided sedeId
-        const url = `http://localhost:3000/api/graphics/task-stats-advanced/${sedeId}`;
+        const url = `${import.meta.env.VITE_API_URL}/graphics/task-stats-advanced/${sedeId}`;
 
         // Make the GET request to the API with the appropriate headers
         const response = await axios.get<SedeStats>(url, {

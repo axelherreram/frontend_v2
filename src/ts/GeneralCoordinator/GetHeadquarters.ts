@@ -12,7 +12,7 @@ export const getSedes = async (): Promise<{ sede_id: number; nameSede: string; a
     }
 
     // Make the GET request to the specified URL to get the list of 'sedes'
-    const response = await axios.get('http://localhost:3000/api/sedes', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/sedes`, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the token in the Authorization header
         'Content-Type': 'application/json',   // Set Content-Type to JSON

@@ -30,7 +30,7 @@ export const getTareasEstudiante = async (
 
     // Make a GET request to retrieve the student's tasks
     const response = await axios.get(
-      `http://localhost:3000/api/submissions/student/${userId}/${year}/${sedeId}`,
+      `${import.meta.env.VITE_API_URL}/submissions/student/${userId}/${year}/${sedeId}`,
       {
         headers: {
           'Authorization': `Bearer ${token}`, // Include the authentication token in the request headers

@@ -13,7 +13,7 @@ export const subirPropuesta = async (propuestaData: { file: File; user_id: numbe
     formData.append('task_id', propuestaData.task_id.toString());
 
     // Send the POST request to upload the proposal
-    await axios.post('http://localhost:3000/api/thesis/upload', formData, {
+    await axios.post(`${import.meta.env.VITE_API_URL}/thesis/upload`, formData, {
       headers: {
         Authorization: `Bearer ${token}`, // Include the authentication token in the request headers
         'Content-Type': 'multipart/form-data', // Ensure proper handling of FormData

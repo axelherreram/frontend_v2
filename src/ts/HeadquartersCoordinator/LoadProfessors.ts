@@ -27,7 +27,7 @@ export const cargarCatedraticos = async ({
 
     // Make a POST request to upload the file to the specified API endpoint
     const response = await axios.post(
-      'http://localhost:3000/api/catedraticos/cargaMasiva',  // The URL for the bulk upload endpoint
+      `${import.meta.env.VITE_API_URL}/catedraticos/cargaMasiva`,  // The URL for the bulk upload endpoint
       formData,  // Send the form data containing the file and campus ID
       {
         headers: {

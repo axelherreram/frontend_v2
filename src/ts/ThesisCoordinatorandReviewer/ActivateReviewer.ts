@@ -19,7 +19,7 @@ export const activateReviewer = async (
 
     // Make a POST request to toggle the active status of the Thesis Coordinator
     const response = await axios.post(
-      'http://localhost:3000/api/reviewers/toggle',
+      `${import.meta.env.VITE_API_URL}/reviewers/toggle`,
       { user_id: userId },
       {
         headers: {

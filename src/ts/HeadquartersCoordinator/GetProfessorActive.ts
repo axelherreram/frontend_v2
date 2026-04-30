@@ -21,7 +21,7 @@ export const getCatedraticosActivos = async (sede_id: number, year: number): Pro
     }
 
     // Construct the URL for the GET request to fetch active professors
-    const url = `http://localhost:3000/api/professors/activos?sede_id=${sede_id}&year=${year}`;
+    const url = `${import.meta.env.VITE_API_URL}/professors/activos?sede_id=${sede_id}&year=${year}`;
     
     // Make the GET request to the API with the appropriate headers
     const response = await axios.get(url, {

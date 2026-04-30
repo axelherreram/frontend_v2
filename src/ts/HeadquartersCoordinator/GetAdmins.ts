@@ -34,7 +34,7 @@ export const getAdmins = async (sede_id: number): Promise<Admin[]> => {
     }
 
     // Make the GET request to the specified URL to retrieve the list of admins
-    const response = await axios.get<AdminsResponse>(`http://localhost:3000/api/admins/${sede_id}`, {
+    const response = await axios.get<AdminsResponse>(`${import.meta.env.VITE_API_URL}/admins/${sede_id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the token in the authorization header
         'Content-Type': 'application/json',   // Set content type to JSON

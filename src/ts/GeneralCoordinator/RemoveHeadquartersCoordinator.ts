@@ -14,7 +14,7 @@ export const removeHeadquartersCoordinator = async (user_id: number, sede_id: nu
 
     // Make the POST request to the specified URL to remove the coordinator
     await axios.post(
-      'http://localhost:3000/api/coordinator/remove',  // API endpoint for removing a coordinator
+      `${import.meta.env.VITE_API_URL}/coordinator/remove`,  // API endpoint for removing a coordinator
       { user_id, sede_id },  // The payload containing the user and headquarters IDs
       {
         headers: {

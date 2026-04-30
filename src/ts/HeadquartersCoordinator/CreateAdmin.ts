@@ -15,7 +15,7 @@ export const createAdmin = async (adminData: {
       throw new Error('Token de autenticación no encontrado');  // If token is not found, throw an error
     }
     // Make the POST request to the specified URL to create the admin
-    await axios.post('http://localhost:3000/api/admin/create', adminData, {
+    await axios.post(`${import.meta.env.VITE_API_URL}/admin/create`, adminData, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the token in the authorization header
         'Content-Type': 'application/json',  // Set content type to JSON

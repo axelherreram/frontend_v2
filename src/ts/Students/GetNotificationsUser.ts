@@ -19,7 +19,7 @@ export const getNotificationsUser = async (user_id: number): Promise<UserNotific
     }
 
     // Make the GET request to the specified URL to get the notifications data for the user
-    const response = await axios.get<UserNotification[]>(`http://localhost:3000/api/student/notifications/${user_id}`, {
+    const response = await axios.get<UserNotification[]>(`${import.meta.env.VITE_API_URL}/student/notifications/${user_id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the token in the authorization header
         'Content-Type': 'application/json',  // Set the content type as JSON

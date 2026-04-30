@@ -30,7 +30,7 @@ export const getRevisionesEnRevision = async (
     }
 
     // Build the URL with the query parameters
-    const url = `http://localhost:3000/api/revision-thesis/in-review?order=${order}&carnet=${carnet}`;
+    const url = `${import.meta.env.VITE_API_URL}/revision-thesis/in-review?order=${order}&carnet=${carnet}`;
 
     // Make the GET request to the specified URL to fetch the thesis revisions in review
     const response = await axios.get(url, {

@@ -29,7 +29,7 @@ export const getRevisionesCordinador = async (
     }
 
     // Build the URL with the query parameters
-    let url = `http://localhost:3000/api/assigned-review/user/${user_id}?order=${order}`;
+    let url = `${import.meta.env.VITE_API_URL}/assigned-review/user/${user_id}?order=${order}`;
     if (carnet) {
       url += `&carnet=${encodeURIComponent(carnet)}`;
     }

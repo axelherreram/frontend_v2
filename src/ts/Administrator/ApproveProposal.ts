@@ -18,7 +18,7 @@ export const aprobarPropuesta = async (
 
     // Make a PUT request to update the thesis proposal approval status
     await axios.put(
-      `http://localhost:3000/api/thesis-submission/${thesisSubmissionId}/${userId}/update-approved-proposal`,  // URL with thesis submission ID and user ID
+      `${import.meta.env.VITE_API_URL}/thesis-submission/${thesisSubmissionId}/${userId}/update-approved-proposal`,  // URL with thesis submission ID and user ID
       requestBody,  // Send the request body with the approval status
       {
         headers: {

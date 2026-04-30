@@ -17,7 +17,7 @@ export const createHeadquartersCoordinator = async (
 
     // Make the POST request to the specified URL to create the headquarters coordinator
     await axios.post(
-      'http://localhost:3000/api/createCorSede',  // API endpoint for creating a headquarters coordinator
+      `${import.meta.env.VITE_API_URL}/createCorSede`,  // API endpoint for creating a headquarters coordinator
       { name, email, carnet, sede_id },  // The payload containing coordinator data
       {
         headers: {

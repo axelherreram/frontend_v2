@@ -52,7 +52,7 @@ export const getComentariosRevision = async (user_id: number): Promise<ThesisRev
       throw new Error('Token de autenticación no encontrado');
     }
 
-    const url = `http://localhost:3000/api/revision-thesis/info/${user_id}`;
+    const url = `${import.meta.env.VITE_API_URL}/revision-thesis/info/${user_id}`;
     const response = await axios.get(url, {
       headers: {
         'Authorization': `Bearer ${token}`,

@@ -7,7 +7,7 @@ export const enviaComentario = async (taskId: number, commentData: { comment: st
     if (!token) throw new Error('Token de autenticación no encontrado'); // Authentication token is required
 
     // Construct the API endpoint URL using the task ID
-    const url = `http://localhost:3000/api/comments/${taskId}`;
+    const url = `${import.meta.env.VITE_API_URL}/comments/${taskId}`;
 
     // Send the POST request to submit the comment
     await axios.post(url, commentData, {

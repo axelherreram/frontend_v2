@@ -32,7 +32,7 @@ export const getRevisionDetallePendi = async (user_id: number): Promise<Revision
     }
 
     // Construir la URL con el parámetro user_id
-    const url = `http://localhost:3000/api/revision-thesis/user/${user_id}`;
+    const url = `${import.meta.env.VITE_API_URL}/revision-thesis/user/${user_id}`;
 
     // Realizar la solicitud GET
     const response = await axios.get(url, {

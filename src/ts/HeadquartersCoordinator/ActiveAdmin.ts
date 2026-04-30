@@ -17,7 +17,7 @@ export const ActiveAdmin = async (userId: number, active: boolean): Promise<Resp
 
     // Petición PUT al endpoint correspondiente
     const response = await axios.put<ResponseMessage>(
-      'http://localhost:3000/api/admin/toggle-status',
+      `${import.meta.env.VITE_API_URL}/admin/toggle-status`,
       {
         user_id: userId,
         active: active

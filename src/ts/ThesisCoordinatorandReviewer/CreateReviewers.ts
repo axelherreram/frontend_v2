@@ -17,7 +17,7 @@ export const creaRevisor = async (data: RevisorData): Promise<void> => {
     }
 
     // URL de la API
-    const url = 'http://localhost:3000/api/reviewers';
+    const url = `${import.meta.env.VITE_API_URL}/reviewers`;
 
     // Realizar la solicitud POST
     await axios.post(url, data, {

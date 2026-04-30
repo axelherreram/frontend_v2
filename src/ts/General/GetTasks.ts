@@ -26,7 +26,7 @@ export const getTareas = async (sedeId: number, courseId: number, yearId: number
     }
 
     // Make a GET request to the specified URL with the correct parameters
-    const response = await axios.get(`http://localhost:3000/api/tareas/curso/${sedeId}/${courseId}/${yearId}`, {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/tareas/curso/${sedeId}/${courseId}/${yearId}`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Include authentication token in the request headers
         'Content-Type': 'application/json', // Specify the content type as JSON

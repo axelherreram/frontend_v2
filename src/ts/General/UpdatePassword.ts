@@ -5,14 +5,14 @@ export const updatePassword = async (oldPassword: string, newPassword: string): 
   try {
     // Retrieve the authentication token from localStorage
     const token = localStorage.getItem('authToken');
-    
+
     if (!token) {
       throw new Error('Token de autenticación no encontrado');  // If token is not found, throw an error
     }
 
     // Make the PUT request to update the password
     const response = await axios.put(
-      'http://localhost:3000/auth/updatePassword',
+      `${import.meta.env.VITE_API_URL}/updatePassword`,
       JSON.stringify({ currentPassword: oldPassword, newPassword }), // Ensure to use 'currentPassword' instead of 'oldPassword'
       {
         headers: {

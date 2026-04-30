@@ -38,7 +38,7 @@ export const getDetalleTareas = async (
     }
 
     const response = await axios.get(
-      `http://localhost:3000/api/students/${user_id}/courses/${course_id}/sede/${sede_id}/year/${year}/details`,
+      `${import.meta.env.VITE_API_URL}/students/${user_id}/courses/${course_id}/sede/${sede_id}/year/${year}/details`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

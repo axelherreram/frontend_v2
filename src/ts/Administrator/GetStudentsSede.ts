@@ -12,7 +12,7 @@ export const getStudentsSede = async (sedeId: number): Promise<{ totalStudents: 
     }
 
     // Make the GET request to the API with the appropriate headers
-    const response = await axios.get(`http://localhost:3000/api/graphics/data/${sedeId}`, {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/graphics/data/${sedeId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',

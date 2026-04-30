@@ -19,7 +19,7 @@ export const getTimeLineEstudiante = async (user_id: number): Promise<Log[]> => 
     }
 
     // Define the URL for the API request using the `user_id`
-    const url = `http://localhost:3000/api/timeline/user/${user_id}`;
+    const url = `${import.meta.env.VITE_API_URL}/timeline/user/${user_id}`;
     
     // Make the GET request to fetch the timeline data for the user
     const response = await axios.get(url, {

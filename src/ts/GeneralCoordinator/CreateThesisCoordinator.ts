@@ -12,7 +12,7 @@ export const createThesisCoordinator = async (name: string, email: string, carne
 
     // Make the POST request to create the Thesis Coordinator
     await axios.post(
-      'http://localhost:3000/api/createCorThesis',
+      `${import.meta.env.VITE_API_URL}/createCorThesis`,
       { name, email, carnet },
       {
         headers: {

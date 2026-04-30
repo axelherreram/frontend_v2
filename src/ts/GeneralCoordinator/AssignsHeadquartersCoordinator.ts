@@ -14,7 +14,7 @@ export const assignsHeadquartersCoordinator = async (user_id: number, sede_id: n
 
     // Make the POST request to assign the coordinator
     await axios.post(
-      'http://localhost:3000/api/coordinator/assign', // API endpoint for assigning a coordinator
+      `${import.meta.env.VITE_API_URL}/coordinator/assign`, // API endpoint for assigning a coordinator
       { user_id, sede_id }, // Payload containing user and headquarters IDs
       {
         headers: {

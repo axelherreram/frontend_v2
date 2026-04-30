@@ -15,7 +15,7 @@ export const enviaComentario = async (commentData: {
     if (!token) throw new Error('Token de autenticación no encontrado');
 
     // Realizar la solicitud POST a la API
-    await axios.post('http://localhost:3000/api/comment-revision', commentData, {
+    await axios.post(`${import.meta.env.VITE_API_URL}/comment-revision`, commentData, {
       headers: {
         Authorization: `Bearer ${token}`, // Incluir el token en los headers
         'Content-Type': 'application/json',

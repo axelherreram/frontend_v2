@@ -24,7 +24,7 @@ export const getDatosPerfil = async (): Promise<PerfilData> => {
     }
 
     // Make a GET request to the specified URL to fetch profile data
-    const response = await axios.get('http://localhost:3000/api/usuarios/perfil', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/usuarios/perfil`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Include authentication token in the request headers
         'Content-Type': 'application/json', // Specify the content type as JSON

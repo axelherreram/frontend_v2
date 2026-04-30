@@ -11,7 +11,7 @@ export const getYears = async (): Promise<{ year_id: number; year: number }[]> =
     }
 
     // Make the GET request to the specified URL to get the years data
-    const response = await axios.get('http://localhost:3000/api/years', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/years`, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the token in the authorization header
         'Content-Type': 'application/json',  // Set the content type as JSON

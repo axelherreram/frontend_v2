@@ -39,7 +39,7 @@ export const getComisionesIndiv = async (
 
     // Make a GET request to the API with the groupId and year as URL parameters
     const response = await axios.get(
-      `http://localhost:3000/api/comisiones/grupos/${groupId}/${year}`, // API URL with groupId and year
+      `${import.meta.env.VITE_API_URL}/comisiones/grupos/${groupId}/${year}`, // API URL with groupId and year
       {
         headers: {
           Authorization: `Bearer ${token}`,  // Include the authorization token in the request headers

@@ -22,7 +22,7 @@ export const getRevisionesPorSede = async (): Promise<RevisionPorSedeResponse> =
     }
 
     // URL de la API
-    const url = 'http://localhost:3000/api/revision-thesis/statistics-by-sede';
+    const url = `${import.meta.env.VITE_API_URL}/revision-thesis/statistics-by-sede`;
 
     // Realizar la solicitud GET
     const response = await axios.get<RevisionPorSedeResponse>(url, {

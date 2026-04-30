@@ -12,7 +12,7 @@ export const updateComentStats = async (comentId: number): Promise<string> => {
 
     // Make the PUT request to deactivate the comment
     const response = await axios.patch(
-      `http://localhost:3000/api/comments/${comentId}/deactivate`,
+      `${import.meta.env.VITE_API_URL}/comments/${comentId}/deactivate`,
       {}, // No body data is needed for deactivating, just the comment ID in the URL
       {
         headers: {

@@ -32,7 +32,7 @@ export const getRevisionesAprobadas = async (
     }
 
     // Build the URL with the query parameters
-    let url = `http://localhost:3000/api/revision-thesis/approved?order=${order}`;
+    let url = `${import.meta.env.VITE_API_URL}/revision-thesis/approved?order=${order}`;
     if (carnet) {
       url += `&carnet=${carnet}`;
     }

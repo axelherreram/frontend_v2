@@ -19,7 +19,7 @@ export const getNotificationsAdmin = async (sede_id: number): Promise<Notificati
     }
 
     // Make the GET request to the specified URL to get the notifications data
-    const response = await axios.get<Notification[]>(`http://localhost:3000/api/admin/notifications/${sede_id}`, {
+    const response = await axios.get<Notification[]>(`${import.meta.env.VITE_API_URL}/admin/notifications/${sede_id}`, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the token in the authorization header
         'Content-Type': 'application/json',  // Set the content type as JSON

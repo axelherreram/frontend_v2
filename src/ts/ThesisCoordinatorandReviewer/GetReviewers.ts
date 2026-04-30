@@ -22,7 +22,7 @@ export const getRevisores = async (): Promise<Revisor[]> => {
     }
 
     // URL de la API
-    const url = 'http://localhost:3000/api/reviewers';
+    const url = `${import.meta.env.VITE_API_URL}/reviewers`;
 
     // Realizar la solicitud GET
     const response = await axios.get(url, {

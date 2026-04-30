@@ -22,7 +22,7 @@ export const getCatedraticos = async (sede_id: number): Promise<Catedratico[]> =
     }
 
     // Construct the URL for the GET request to fetch professors based on the sede_id
-    const url = `http://localhost:3000/api/professors?sede_id=${sede_id}`;
+    const url = `${import.meta.env.VITE_API_URL}/professors?sede_id=${sede_id}`;
     
     // Make the GET request to the API with the appropriate headers
     const response = await axios.get(url, {

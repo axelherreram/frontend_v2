@@ -22,7 +22,7 @@ export const createTarea = async (tareaData: {
     }
 
     // Make the POST request to the specified URL to create the task
-    await axios.post('http://localhost:3000/api/tareas', tareaData, {
+    await axios.post(`${import.meta.env.VITE_API_URL}/tareas`, tareaData, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the authentication token in the request headers
         'Content-Type': 'application/json',   // Specify that the content type is JSON
