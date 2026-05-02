@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import Swal from "sweetalert2"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
-import { getDatosPerfil } from "../../ts/General/GetProfileData" // Make sure to import correctly
+import { useProfile } from "../../context/UserProfileContext"
 import { enviaRevision } from "../../ts/Administrator/SubmitReview" // Make sure to import correctly
 import ModalCreateUserSinLogin from "../../components/Modals/CreateUserWithoutLogin"
 import { User, FileText, CheckCircle, Loader2, UploadCloud } from "lucide-react"
@@ -11,12 +11,12 @@ import { User, FileText, CheckCircle, Loader2, UploadCloud } from "lucide-react"
  * Allows users to upload thesis documents and approval letters
  */
 const SubmitReview: React.FC = () => {
-  // State for form data
+  const { profile } = useProfile()
+  const campusId = profile?.sede ?? null
   const [studentId, setStudentId] = useState<string>("")
   const [approvedThesis, setApprovedThesis] = useState<File | null>(null)
   const [approvalLetter, setApprovalLetter] = useState<File | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
-  const [campusId, setCampusId] = useState<number | null>(null) // State to store the campus_id
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
   /**
@@ -44,75 +44,7 @@ const SubmitReview: React.FC = () => {
     }
   }
 
-  /**
-   * Fetches profile data to get the campus ID
-   */
-  const fetchCampusId = async () => {
-    try {
-      const profileData = await getDatosPerfil()
-      setCampusId(profileData.sede) // Sets the campus_id from the API
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Hubo un error al obtener los datos del perfil.",
-        confirmButtonColor: "#ef4444",
-        confirmButtonText: "De Acuerdo",
-      })
-    }
-  }
-
-  /**
-   * Handles form submission
-   * Validates inputs and submits the review
-   */
-  const handleSubmit = async () => {
-    if (!studentId || !approvedThesis || !approvalLetter || campusId === null) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Por favor, completa todos los campos.",
-        confirmButtonColor: "#ef4444",
-        confirmButtonText: "De Acuerdo",
-      })
-      return
-    }
-
-    setLoading(true) // Starts the loading indicator
-
-    try {
-      // Calls the API to submit the review
-      await enviaRevision({
-        carnet: studentId,
-        sede_id: campusId, // Sends the retrieved campus_id
-        approval_letter: approvalLetter, // Sends the approval letter file
-        thesis: approvedThesis, // Sends the thesis file
-      })
-      Swal.fire({
-        icon: "success",
-        title: "Éxito",
-        text: "La revisión ha sido enviada correctamente.",
-        confirmButtonColor: "#10b981",
-        confirmButtonText: "De Acuerdo",
-      })
-    } catch (error: any) {
-      // Shows the error message from the API
-      Swal.fire({
-        icon: "error",
-        title: "Error al enviar",
-        text: error.message || "Hubo un error al enviar la revisión. Inténtalo nuevamente.",
-        confirmButtonColor: "#ef4444",
-        confirmButtonText: "De Acuerdo",
-      })
-    } finally {
-      setLoading(false) // Stops the loading indicator
-    }
-  }
-
-  // Calls the fetchCampusId function when the component mounts
-  React.useEffect(() => {
-    fetchCampusId()
-  }, [])
+  // campusId is derived from profile context — no useEffect needed
 
   return (
     <>

@@ -1,7 +1,7 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { getCursos } from "../../ts/General/GetCourses"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
 import { BookOpen, GraduationCap, Loader2 } from "lucide-react"
@@ -11,50 +11,39 @@ import { BookOpen, GraduationCap, Loader2 } from "lucide-react"
  */
 const Courses: React.FC = () => {
   const navigate = useNavigate()
-  // State for courses, loading status, and error messages
+  const { profile } = useProfile()
   const [courses, setCourses] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  /**
-   * Navigate to course details page
-   */
   const handleNavigate = (courseTitle: string, courseId: number) => {
     navigate("/estudiantes/info-curso", { state: { courseTitle, courseId } })
   }
 
-  /**
-   * Fetch course data on component mount
-   */
   useEffect(() => {
+    if (!profile) return
     const fetchData = async () => {
       try {
-        const perfilData = await getDatosPerfil()
-        const sedeId = perfilData.sede
         const currentYear = new Date().getFullYear()
-        const cursos = await getCursos(sedeId, currentYear)
+        const cursos = await getCursos(profile.sede, currentYear)
         const updatedCourses = cursos.map((course) => {
           let description = ""
           if (course.course_id === 1) {
-            description =
-              "Este curso cubre la primera fase del proyecto de graduación, enfocándose en la planificación y diseño."
+            description = "Este curso cubre la primera fase del proyecto de graduación, enfocándose en la planificación y diseño."
           } else if (course.course_id === 2) {
             description = "En este curso, completarás el desarrollo y presentación final de tu proyecto de graduación."
           }
-          return {
-            ...course,
-            description: description,
-          }
+          return { ...course, description }
         })
         setCourses(updatedCourses)
         setLoading(false)
-      } catch (err: any) {
+      } catch {
         setError("Hubo un error al recuperar los datos.")
         setLoading(false)
       }
     }
     fetchData()
-  }, [])
+  }, [profile])
 
   if (loading) {
     return (

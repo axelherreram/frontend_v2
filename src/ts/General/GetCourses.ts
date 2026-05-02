@@ -19,7 +19,7 @@ export const getCursos = async (sedeId: number, year: number): Promise<Curso[]> 
 
     // Make a GET request to the API to obtain the courses for the given sede and year
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/cursosPorSede/${sedeId}/${year}`,
+      `${import.meta.env.VITE_API_URL}/courses/by-location/${sedeId}/${year}`,
       {
         headers: {
           'Authorization': `Bearer ${token}`, // Include the authentication token in the request header

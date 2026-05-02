@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { getRevisionesCordinador } from "../../ts/ThesisCoordinatorandReviewer/GetRevisionsCoordinator"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import TourMyAssignments from "../../components/Tours/ThesisCoordinator/TourMyAssignments"
 import type React from "react"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
@@ -12,34 +12,17 @@ import { Search, Loader2, ChevronLeft, ChevronRight } from "lucide-react" // Imp
  */
 const MyAssignments: React.FC = () => {
   const navigate = useNavigate()
-  // State declarations
-  const [userId, setUserId] = useState<number | null>(null)
+  const { profile } = useProfile()
+  const userId = profile?.user_id ?? null
   const [revisiones, setRevisiones] = useState<any[]>([])
   const [searchCarnet, setSearchCarnet] = useState("")
   const [order, setOrder] = useState<"asc" | "desc">("asc")
   const [filteredRevisiones, setFilteredRevisiones] = useState(revisiones)
   const [isCarnetSearch, setIsCarnetSearch] = useState(false)
-  const [isSearching, setIsSearching] = useState<boolean>(false) // Added for search input loading state
-
-  // State hooks for pagination
+  const [isSearching, setIsSearching] = useState<boolean>(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [revisionesPerPage, setRevisionesPerPage] = useState(5)
   const [maxPageButtons, setMaxPageButtons] = useState(10)
-
-  /**
-   * Fetch user profile data when component mounts
-   */
-  useEffect(() => {
-    const fetchUserId = async () => {
-      try {
-        const perfil = await getDatosPerfil()
-        setUserId(perfil.user_id)
-      } catch (error) {
-
-      }
-    }
-    fetchUserId()
-  }, [])
 
   /**
    * Fetch coordinator's reviews from the API

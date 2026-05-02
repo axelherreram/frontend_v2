@@ -1,7 +1,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { getTimeLineEstudiante } from "../../ts/General/GetTimeLineStudent"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
 import { CalendarDays, Clock, Users, XCircle } from "lucide-react" // Import Lucide React icons
 
@@ -20,40 +20,37 @@ interface TimeLineEvent {
  * Component for displaying a student's timeline of events
  */
 const Start: React.FC = () => {
-  // State hooks for various pieces of information in the component
-  const [events, setEvents] = useState<TimeLineEvent[]>([]) // Array to store the fetched timeline events
-  const [loading, setLoading] = useState(true) // Loading state to show loading message while data is being fetched
-  const [userName, setUserName] = useState("") // State to store the user's name
+  const { profile } = useProfile()
+  const [events, setEvents] = useState<TimeLineEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [userName, setUserName] = useState("")
 
-  /**
-   * Fetch profile and timeline data when the component is mounted
-   */
   useEffect(() => {
-    const fetchProfileAndTimeline = async () => {
+    if (!profile) return
+    const fetchTimeline = async () => {
       try {
-        setLoading(true) // Set loading to true before fetching data
-        const perfil = await getDatosPerfil() // Fetch user profile data
-        setUserName(perfil.userName) // Set user name from profile data
-        const logs = await getTimeLineEstudiante(perfil.user_id) // Fetch timeline events for the student
+        setLoading(true)
+        setUserName(profile.userName)
+        const logs = await getTimeLineEstudiante(profile.user_id)
         setEvents(
           logs
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Sort events by date in descending order
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
             .map((log) => ({
               user_id: log.user_id,
               typeEvent: log.typeEvent,
               description: log.description,
               task_id: log.task_id,
-              date: new Date(log.date).toLocaleDateString(), // Format the date to a more readable format
-            })),
+              date: new Date(log.date).toLocaleDateString(),
+            }))
         )
-      } catch (err: any) {
-        // Error handling if necessary (e.g., displaying an error message)
+      } catch {
+        // silent
       } finally {
-        setLoading(false) // Set loading to false once the data has been fetched
+        setLoading(false)
       }
     }
-    fetchProfileAndTimeline() // Call the function to fetch the profile and timeline data
-  }, []) // Empty dependency array means this effect runs only once after the component mounts [^2]
+    fetchTimeline()
+  }, [profile])
 
   // Display loading message if data is still being fetched
   if (loading) {

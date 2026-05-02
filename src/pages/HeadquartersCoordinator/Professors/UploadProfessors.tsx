@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { getDatosPerfil } from "../../../ts/General/GetProfileData"
+import { useProfile } from "../../../context/UserProfileContext"
 import { cargarCatedraticos } from "../../../ts/HeadquartersCoordinator/LoadProfessors"
 import TourUploadProffesor from "../../../components/Tours/HeadquartersCoordinator/TourUploadProffesor"
 import Swal from "sweetalert2"
@@ -7,28 +7,13 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import { UploadCloud, Download, FileText, Loader2 } from "lucide-react" // Import Lucide React icons
 
 const UploadProfessors: React.FC = () => {
+  const { profile } = useProfile()
+  const headquarterId = profile?.sede ?? null
   const [fileSelected, setFileSelected] = useState<File | null>(null)
   const [apiLoading, setApiLoading] = useState<boolean>(false)
-  const [headquarterId, setHeadquarterId] = useState<number | null>(null)
   const fileInputRef = React.createRef<HTMLInputElement>()
 
-  useEffect(() => {
-    const fetchHeadquarterId = async () => {
-      try {
-        const { sede } = await getDatosPerfil()
-        setHeadquarterId(sede)
-      } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "¡Error!",
-          text: "No se pudo obtener la información del perfil.",
-          confirmButtonColor: "#ef4444",
-          confirmButtonText: "De Acuerdo",
-        })
-      }
-    }
-    fetchHeadquarterId()
-  }, [])
+  // headquarterId is derived directly from profile context
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null

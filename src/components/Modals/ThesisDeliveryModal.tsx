@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Swal from "sweetalert2";
-import { getDatosPerfil } from "../../ts/General/GetProfileData";
+import { useProfile } from "../../context/UserProfileContext";
 import { entregarTarea } from "../../ts/Students/DeliverTask";
 import { FileText, CheckCircle, Loader2, UploadCloud, X } from "lucide-react";
 
@@ -17,27 +17,10 @@ const ThesisDeliveryModal: React.FC<ThesisDeliveryModalProps> = ({
   taskId,
   taskTitle,
 }) => {
+  const { profile } = useProfile();
+  const userId = profile?.user_id ?? null;
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [userId, setUserId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const perfil = await getDatosPerfil();
-        setUserId(perfil.user_id);
-      } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "No se pudieron obtener los datos del usuario.",
-          confirmButtonColor: "#ef4444",
-          confirmButtonText: "De Acuerdo",
-        });
-      }
-    };
-    if (isOpen) fetchUser();
-  }, [isOpen]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

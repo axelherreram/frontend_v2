@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import Swal from "sweetalert2"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import { getCursos } from "../../../ts/General/GetCourses"
-import { getDatosPerfil } from "../../../ts/General/GetProfileData"
+import { useProfile } from "../../../context/UserProfileContext"
 import { cargaMasiva } from "../../../ts/Administrator/MassiveLoadStudents"
 import TourUploadStudents from "../../../components/Tours/Administrator/TourUploadStudents"
 import { UploadCloud, Download, FileText, Loader2, XCircle } from "lucide-react"
@@ -11,35 +11,33 @@ import { UploadCloud, Download, FileText, Loader2, XCircle } from "lucide-react"
  * Main component for uploading students in bulk
  */
 const UploadStudents = () => {
-  const [fileSelected, setFileSelected] = useState<File | null>(null) // State for the selected file
-  const [selectedCourse, setSelectedCourse] = useState<string>("") // State for the selected course
-  const [courses, setCourses] = useState<any[]>([]) // State to hold the list of courses
-  const [loading, setLoading] = useState<boolean>(true) // State to track loading status for fetching courses
-  const [apiLoading, setApiLoading] = useState<boolean>(false) // State to track API loading during the file upload process
-  const fileInputRef = React.createRef<HTMLInputElement>() // Ref for the file input element
+  const { profile } = useProfile()
+  const [fileSelected, setFileSelected] = useState<File | null>(null)
+  const [selectedCourse, setSelectedCourse] = useState<string>("")
+  const [courses, setCourses] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [apiLoading, setApiLoading] = useState<boolean>(false)
+  const fileInputRef = React.createRef<HTMLInputElement>()
 
   /**
    * Fetching the courses when the component mounts
    */
   useEffect(() => {
+    if (!profile) return
     const fetchCourses = async () => {
       try {
-        // Fetching user profile data to get the 'sede'
-        const { sede } = await getDatosPerfil()
-        const currentYear = new Date().getFullYear() // Getting the current year
-        // Fetching courses for the current year and the selected sede
-        const coursesData = await getCursos(sede, currentYear)
+        const currentYear = new Date().getFullYear()
+        const coursesData = await getCursos(profile.sede, currentYear)
         if (Array.isArray(coursesData) && coursesData.length > 0) {
-          setCourses(coursesData) // Setting the fetched courses in state
+          setCourses(coursesData)
         }
-      } catch (error) {
-        
+      } catch {
       } finally {
-        setLoading(false) // Setting loading state to false after fetching is done
+        setLoading(false)
       }
     }
-    fetchCourses() // Calling the fetch function
-  }, []) // Empty dependency array to run only once on mount
+    fetchCourses()
+  }, [profile])
 
   /**
    * Helper function to show alerts
@@ -81,21 +79,15 @@ const UploadStudents = () => {
       showAlert("error", "¡Error!", "Archivo o curso no seleccionado.") // Show error if no file or course is selected
       return
     }
-    setApiLoading(true) // Start loading state
+    setApiLoading(true)
     try {
-      // Fetching user profile data again to get the 'sede'
-      const { sede } = await getDatosPerfil()
-      // Finding the selected course in the list of courses
       const selectedCourseObj = courses.find((course) => course.courseName === selectedCourse)
-      if (!selectedCourseObj) {
-        throw new Error("Curso seleccionado no encontrado") // Throw an error if the course is not found
-      }
-      // Calling the bulk upload function
+      if (!selectedCourseObj) throw new Error("Curso seleccionado no encontrado")
       await cargaMasiva({
         archivo: fileSelected,
-        sede_id: sede,
-        rol_id: 1, // Assuming role 1 is the student role
-        course_id: selectedCourseObj.course_id, // Passing the selected course ID
+        sede_id: profile?.sede!,
+        rol_id: 1,
+        course_id: selectedCourseObj.course_id,
       })
       showAlert("success", "Carga masiva completada", "Los estudiantes se han cargado correctamente.") // Show success alert
       handleReset() // Reset the form after successful upload

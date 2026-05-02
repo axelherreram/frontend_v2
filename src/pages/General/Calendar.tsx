@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { getTareasSede, type Tarea } from "../../ts/General/GetTasksHeadquarters"
 import dayjs from "dayjs"
 import isBetween from "dayjs/plugin/isBetween"
@@ -20,8 +20,6 @@ const Calendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(dayjs())
   // State to hold the list of tasks for the selected month
   const [tasks, setTasks] = useState<Tarea[]>([])
-  // State to hold the ID of the current campus
-  const [campusId, setCampusId] = useState<number | null>(null)
 
   // Calculate the first day of the month and the number of days in the current month
   const startOfMonth = currentDate.startOf("month")
@@ -65,14 +63,9 @@ const Calendar: React.FC = () => {
     return day && currentDate.date(day).isSame(dayjs(), "day")
   }
 
-  // Effect hook to fetch the campus data when the component mounts
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      const { sede } = await getDatosPerfil() // Get profile data
-      setCampusId(sede) // Set the campus ID
-    }
-    fetchProfileData()
-  }, []) // Empty dependency array means this runs only once on mount
+  // Read campus ID directly from context — no API call needed
+  const { profile } = useProfile()
+  const campusId = profile?.sede ?? null
 
   // Effect hook to fetch the tasks for the current campus and year
   useEffect(() => {

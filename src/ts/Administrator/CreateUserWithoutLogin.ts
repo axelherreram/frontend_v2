@@ -14,7 +14,7 @@ export const createUserSinLogin = async (userData: {
     if (!token) throw new Error('Token de autenticación no encontrado');
 
     // Make a POST request to the API to create the user
-    await axios.post(`${import.meta.env.VITE_API_URL}/usuarios/crear`, userData, {
+    await axios.post(`${import.meta.env.VITE_API_URL}/users/create`, userData, {
       headers: {
         'Authorization': `Bearer ${token}`, // Include the authentication token in the request headers
         'Content-Type': 'application/json',  // Specify that the content type is JSON

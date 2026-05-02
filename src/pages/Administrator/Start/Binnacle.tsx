@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
-import { getDatosPerfil } from "../../../ts/General/GetProfileData"
+import { useProfile } from "../../../context/UserProfileContext"
 import { getBitacora } from "../../../ts/Administrator/GetBinnacle"
 
 /**
@@ -19,6 +19,7 @@ type Log = {
  * Displays a chronological list of system activities with pagination
  */
 const Binnacle = () => {
+  const { profile } = useProfile()
   // State variables to store logs, current page, selected sede, logs per page, and max page buttons
   const [logs, setLogs] = useState<Log[]>([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -31,17 +32,9 @@ const Binnacle = () => {
    * Effect hook to fetch sedeId and set up the responsive design
    */
   useEffect(() => {
-    const fetchSedeId = async () => {
-      try {
-        // Fetching profile data to get the current sede
-        const { sede } = await getDatosPerfil()
-        setSedeId(sede)
-      } catch (error) {
-        
-      }
+    if (profile?.sede) {
+      setSedeId(profile.sede)
     }
-
-    fetchSedeId()
 
     // Handle window resizing to adjust logs per page and max page buttons
     const handleResize = () => {
@@ -60,7 +53,7 @@ const Binnacle = () => {
     window.addEventListener("resize", handleResize)
     // Cleanup event listener on component unmount
     return () => window.removeEventListener("resize", handleResize)
-  }, [])
+  }, [profile])
 
   /**
    * Effect hook to fetch logs whenever the sedeId changes

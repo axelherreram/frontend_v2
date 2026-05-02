@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
 import ClickOutside from "../Dark Mode/ClickOutside"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 
 /**
  * DropdownUser Component
@@ -10,12 +10,13 @@ import { getDatosPerfil } from "../../ts/General/GetProfileData"
  * allowing navigation to profile, password change, or logout.
  */
 const DropdownUser = () => {
+  const { profile, error } = useProfile()
   // State to control the dropdown opening
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  // States to store user data
-  const [userName, setUserName] = useState("")
-  const [roleName, setRoleName] = useState("")
-  const [profilePhoto, setProfilePhoto] = useState<string | null>("")
+  // Derive user data from context
+  const userName = profile?.userName || ""
+  const roleName = profile?.roleName || ""
+  const profilePhoto = profile?.profilePhoto || null
 
   // Get the user role stored in localStorage
   const role = localStorage.getItem("userRole")
@@ -58,27 +59,21 @@ const DropdownUser = () => {
 
   const navigate = useNavigate()
 
-  // Fetch profile data when the component loads
+  // Check for auth errors to handle session expiration
   useEffect(() => {
-    getDatosPerfil()
-      .then((perfil) => {
-        setUserName(perfil.userName)
-        setRoleName(perfil.roleName)
-        setProfilePhoto(perfil.profilePhoto)
+    if (error) {
+      // If fetching profile fails, show alert and redirect to login
+      Swal.fire({
+        icon: "error",
+        title: "Sesión expirada",
+        text: "Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.",
+        confirmButtonColor: "#d33",
+      }).then(() => {
+        localStorage.clear()
+        navigate("/")
       })
-      .catch(() => {
-        // If fetching profile fails, show alert and redirect to login
-        Swal.fire({
-          icon: "error",
-          title: "Sesión expirada",
-          text: "Tu sesión ha expirado. Por favor, vuelve a iniciar sesión.",
-          confirmButtonColor: "#d33",
-        }).then(() => {
-          localStorage.clear()
-          navigate("/")
-        })
-      })
-  }, [navigate])
+    }
+  }, [error, navigate])
 
   // Check if localStorage is empty to prevent navigation if there is no session
   useEffect(() => {

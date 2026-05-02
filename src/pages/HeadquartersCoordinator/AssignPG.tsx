@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { getCursos } from "../../ts/General/GetCourses"
 import { crearAsignacionSedeCurso } from "../../ts/HeadquartersCoordinator/CreatePG"
 import TourAssignPG from "../../components/Tours/HeadquartersCoordinator/TourAssignPG"
@@ -12,8 +12,9 @@ import { CheckSquare, BookOpen, Loader2 } from "lucide-react" // Import Lucide R
  * Component for assigning graduation projects to headquarters
  */
 const AssignPG: React.FC = () => {
-  const [sedeId, setSedeId] = useState<number | null>(null)
-  const [sedeNombre, setSedeNombre] = useState<string>("")
+  const { profile } = useProfile()
+  const sedeId = profile?.sede ?? null
+  const sedeNombre = profile?.NombreSede ?? ""
   const [pg1, setPg1] = useState(false)
   const [pg2, setPg2] = useState(false)
   const [pg1Disabled, setPg1Disabled] = useState(false)
@@ -22,22 +23,18 @@ const AssignPG: React.FC = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const fetchPerfil = async () => {
+    if (!profile?.sede) return
+    const fetchCursos = async () => {
       try {
-        const perfil = await getDatosPerfil()
-        setSedeId(perfil.sede)
-        setSedeNombre(perfil.NombreSede)
-        if (perfil.sede) {
-          const currentYear = new Date().getFullYear()
-          const cursos = await getCursos(perfil.sede, currentYear)
-          const pg1Available = cursos.some((curso) => curso.course_id === 1)
-          const pg2Available = cursos.some((curso) => curso.course_id === 2)
-          setPg1(pg1Available)
-          setPg2(pg2Available)
-          setPg1Disabled(pg1Available)
-          setPg2Disabled(pg2Available)
-          setIsButtonDisabled(pg1Available && pg2Available)
-        }
+        const currentYear = new Date().getFullYear()
+        const cursos = await getCursos(profile.sede!, currentYear)
+        const pg1Available = cursos.some((curso) => curso.course_id === 1)
+        const pg2Available = cursos.some((curso) => curso.course_id === 2)
+        setPg1(pg1Available)
+        setPg2(pg2Available)
+        setPg1Disabled(pg1Available)
+        setPg2Disabled(pg2Available)
+        setIsButtonDisabled(pg1Available && pg2Available)
       } catch (error: any) {
         Swal.fire({
           icon: "error",
@@ -48,8 +45,8 @@ const AssignPG: React.FC = () => {
         })
       }
     }
-    fetchPerfil()
-  }, [])
+    fetchCursos()
+  }, [profile])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

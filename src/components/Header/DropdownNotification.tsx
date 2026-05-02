@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import ClickOutside from "../Dark Mode/ClickOutside"
-import { getDatosPerfil, type PerfilData } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { getNotificationsAdmin } from "../../ts/Administrator/GetNotificationsAdmin"
 import { getNotificationsUser } from "../../ts/Students/GetNotificationsUser"
 
 const DropdownNotification = () => {
+  const { profile } = useProfile()
   // State hooks
   const [dropdownOpen, setDropdownOpen] = useState(false) // State to manage dropdown visibility
   const [notifying, setNotifying] = useState(true) // State to show notification indicator
   const [role, setRole] = useState<number | null>(null) // State to store the user's role
-  const [sedeId, setSedeId] = useState<number | null>(null) // State to store the user's sede (location or office)
-  const [userId, setUserId] = useState<number | null>(null) // State to store the user ID
+  const sedeId = profile?.sede || null // Derive sede ID from context
+  const userId = profile?.user_id || null // Derive user ID from context
   const [notifications, setNotifications] = useState<{ notification_text: string; notification_date: string }[]>([]) // State to store notifications
 
   // Effect to load user role from localStorage
@@ -22,20 +23,7 @@ const DropdownNotification = () => {
     }
   }, [])
 
-  // Effect to fetch the user's profile data and set the sedeId and userId
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const perfilData: PerfilData = await getDatosPerfil() // Fetch profile data using the getDatosPerfil function
-        setSedeId(perfilData.sede) // Set the sede ID from the fetched profile data
-        setUserId(perfilData.user_id) // Set the user ID from the fetched profile data
-      } catch (error) {
 
-      }
-    }
-
-    fetchProfileData() // Call the fetchProfileData function
-  }, [])
 
   // Function to fetch notifications based on user role
   const fetchNotifications = async () => {

@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { getEstudiantePorCarnet } from "../../ts/Administrator/GetStudentCard"
 import { getStudents } from "../../ts/General/GetStudents"
 import { Search, Loader2 } from "lucide-react" // Import Lucide icons
@@ -20,6 +20,7 @@ interface SearchStudentsProps {
  * or by filtering based on the selected year and course.
  */
 const SearchStudents: React.FC<SearchStudentsProps> = ({ selectedAño, selectedCurso, onSearchResults }) => {
+  const { profile } = useProfile()
   const [searchCarnet, setSearchCarnet] = useState<string>("") // State to hold the value of the student card input
   const [isSearching, setIsSearching] = useState<boolean>(false) // State to track if a search is in progress
 
@@ -45,7 +46,8 @@ const SearchStudents: React.FC<SearchStudentsProps> = ({ selectedAño, selectedC
 
     try {
       setIsSearching(true) // Set the search state to true to indicate a search is in progress
-      const perfil = await getDatosPerfil() // Fetch profile data of the logged-in user
+      const perfil = profile // Get profile data from context
+      if (!perfil) return
 
       if (!searchCarnet || searchCarnet.length < 11) {
         // If the input is empty or has less than 11 characters, show all students

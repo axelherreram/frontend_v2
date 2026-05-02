@@ -17,7 +17,7 @@ export const getNote = async (userId: number, courseId: number): Promise<Nota> =
         }
 
         // Make a GET request to the specified URL with the correct parameters
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/notas/list/${userId}/${courseId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/grades/list/${userId}/${courseId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',

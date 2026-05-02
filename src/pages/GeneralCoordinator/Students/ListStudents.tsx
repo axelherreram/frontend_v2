@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getYears } from "../../../ts/General/GetYears"
+import { useYears } from "../../../context/YearsContext"
 import { getStudents } from "../../../ts/General/GetStudents"
 import { useNavigate } from "react-router-dom"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
@@ -26,6 +26,7 @@ interface Curso {
 
 const ListStudents: React.FC = () => {
   const { selectedSede } = useSede()
+  const { years: yearsData } = useYears()
   const SedeId = Number(selectedSede)
   const [estudiantes, setEstudiantes] = useState<Estudiante[]>([])
   const [years, setYears] = useState<number[]>([])
@@ -38,12 +39,13 @@ const ListStudents: React.FC = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    if (yearsData.length === 0) return
     const fetchInitialData = async () => {
       const SedeId = Number(selectedSede)
-      const yearsRecuperados = await getYears()
-      setYears(yearsRecuperados.map((yearObj) => yearObj.year))
+      const yearNumbers = yearsData.map((y) => y.year)
+      setYears(yearNumbers)
       const currentYear = new Date().getFullYear().toString()
-      if (yearsRecuperados.map((yearObj) => yearObj.year.toString()).includes(currentYear)) {
+      if (yearNumbers.map(String).includes(currentYear)) {
         setSelectedAño(currentYear)
       }
       const currentMonth = new Date().getMonth()
@@ -58,7 +60,7 @@ const ListStudents: React.FC = () => {
       }
     }
     fetchInitialData()
-  }, [SedeId]) // Se añade SedeId como dependencia para que cargue al cambiar
+  }, [SedeId, yearsData])
 
   const fetchEstudiantes = async (courseId: string, nameYear: string, sedeId: number) => {
     try {

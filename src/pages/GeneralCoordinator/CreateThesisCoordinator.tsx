@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getDatosPerfil, type PerfilData } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { activateThesisCoordinator } from "../../ts/GeneralCoordinator/ActivateThesisCoodinator"
 import { getThesisCoordinators } from "../../ts/GeneralCoordinator/GetThesisCoordinator"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
@@ -11,39 +11,29 @@ import Swal from "sweetalert2"
 import { User, ChevronLeft, ChevronRight, UserPlus, XCircle, Pencil } from "lucide-react" // Import Lucide icons
 
 const CreateThesisCoordinator: React.FC = () => {
+  const { profile } = useProfile()
+  const userIdFromProfile = profile?.user_id ?? null
   const [coordinators, setCoordinators] = useState<any[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [selectedCoordinator, setSelectedCoordinator] = useState<any | null>(null)
-  const [userIdFromProfile, setUserIdFromProfile] = useState<number | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [coordinatorsPerPage, setCoordinatorsPerPage] = useState(5)
   const [maxPageButtons, setMaxPageButtons] = useState(10)
 
-  useEffect(() => {
-    fetchUserProfile()
-  }, []) // Fetch user profile only once on mount
+  // user profile fetched from context
+
 
   useEffect(() => {
     if (userIdFromProfile !== null) {
       fetchCoordinators()
     }
-  }, [userIdFromProfile]) // Fetch coordinators when userIdFromProfile is available
-
-  const fetchUserProfile = async () => {
-    try {
-      const perfilData: PerfilData = await getDatosPerfil()
-      setUserIdFromProfile(perfilData.user_id)
-    } catch (err) {
-      setError("Error al obtener los datos del perfil")
-      setLoading(false)
-    }
-  }
+  }, [userIdFromProfile])
 
   const fetchCoordinators = async () => {
     if (userIdFromProfile === null) return
-    setLoading(true) // Set loading true before fetching
+    setLoading(true)
     try {
       const data = await getThesisCoordinators()
       const filtered = data.filter((c) => c.user_id !== userIdFromProfile)

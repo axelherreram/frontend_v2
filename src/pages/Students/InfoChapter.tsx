@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { enviaComentario } from "../../ts/General/SendComment"
 import { getComentarios, type ComentarioData } from "../../ts/General/GetComment"
-import { getDatosPerfil, type PerfilData } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import TourInfoCap from "../../components/Tours/Student/TourInfoCap"
 import Swal from "sweetalert2"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
@@ -24,15 +24,14 @@ interface Comentario {
  * Component for displaying chapter information and comments
  */
 const InfoChapter: React.FC = () => {
-  const navigate = useNavigate() // Hook for navigating to different routes
-  const location = useLocation() // Hook for accessing location state passed via navigation
-  // Destructure data passed from the previous page
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { profile } = useProfile()
   const { task_id, endTask, endTime, NameCapitulo } = location.state || {}
-  // States for managing comment text, previous comments, user ID, and whether the input is blocked
-  const [comentario, setComentario] = useState<string>("") // State for current comment text
-  const [comentariosPrevios, setComentariosPrevios] = useState<Comentario[]>([]) // State for storing previous comments
-  const [userId, setUserId] = useState<number | null>(null) // State for storing the user ID
-  const [inputBloqueado, setInputBloqueado] = useState<boolean>(true) // State for disabling the input field
+  const [comentario, setComentario] = useState<string>("")
+  const [comentariosPrevios, setComentariosPrevios] = useState<Comentario[]>([])
+  const userId = profile?.user_id ?? null
+  const [inputBloqueado, setInputBloqueado] = useState<boolean>(true)
 
   // Determines if the writing component and buttons should be disabled.
   // If there is at least one comment and its comment_active property is false, it is disabled.
@@ -98,27 +97,7 @@ const InfoChapter: React.FC = () => {
     }
   }
 
-  /**
-   * Hook to load the user profile data on component mount
-   */
-  useEffect(() => {
-    const cargarPerfil = async () => {
-      try {
-        const perfilData: PerfilData = await getDatosPerfil() // Fetch user profile data
-        setUserId(perfilData.user_id) // Set the user ID from the profile data
-      } catch (error) {
-        // Show error alert if profile data cannot be fetched
-        Swal.fire({
-          title: "Error",
-          text: "Hubo un problema al obtener los datos del perfil",
-          icon: "error",
-          confirmButtonColor: "#ef4444",
-          confirmButtonText: "De Acuerdo",
-        })
-      }
-    }
-    cargarPerfil() // Call the function to load profile data
-  }, [])
+  // userId is derived from profile context — no separate useEffect needed
 
   /**
    * Hook to load comments whenever task_id or userId changes

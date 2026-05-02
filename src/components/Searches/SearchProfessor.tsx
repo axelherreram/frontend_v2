@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { getCatedraticos } from "../../ts/HeadquartersCoordinator/GetProfessor"
 import { getCatedraticoPorCarnet } from "../../ts/HeadquartersCoordinator/GetProfessorCard"
 import { Search, Loader2 } from "lucide-react" // Import Lucide icons
@@ -21,6 +21,7 @@ interface SearchProfessorProps {
  * <SearchProfessor onSearchResults={handleSearchResults} />
  */
 const SearchProfessor: React.FC<SearchProfessorProps> = ({ onSearchResults }) => {
+  const { profile } = useProfile()
   const [searchCarnet, setSearchCarnet] = useState<string>("") // State for search input value
   const [isSearching, setIsSearching] = useState<boolean>(false) // State to track if a search is in progress
 
@@ -53,8 +54,8 @@ const SearchProfessor: React.FC<SearchProfessorProps> = ({ onSearchResults }) =>
 
       if (!searchCarnet || searchCarnet.length < 12) {
         // If the input is empty or has fewer than 12 characters, show all professors
-        const perfil = await getDatosPerfil() // Fetch the current profile data
-        if (perfil.sede) {
+        const perfil = profile // Get the current profile data from context
+        if (perfil?.sede) {
           const catedraticosRecuperados = await getCatedraticos(perfil.sede) // Fetch professors from the current sede
           onSearchResults(Array.isArray(catedraticosRecuperados) ? catedraticosRecuperados : []) // Return the result
         }

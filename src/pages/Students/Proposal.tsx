@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { subirPropuesta } from "../../ts/Students/UploadProposals"
 import { updatePropuesta } from "../../ts/Students/UpdateProposal"
 import { getPropuesta } from "../../ts/General/GetProposal"
@@ -13,14 +13,14 @@ import { FileText, XCircle } from "lucide-react" // Import Lucide React icons
  * Component for uploading and managing thesis proposals
  */
 const Proposal: React.FC = () => {
-  // State declarations
-  const [pdfFile, setPdfFile] = useState<File | null>(null) // State for storing the selected PDF file
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null) // State for storing the PDF URL (for preview)
-  const [loading, setLoading] = useState(false) // State for managing the loading state during file upload
-  const [approvalMessage, setApprovalMessage] = useState("Pendiente Aprobar") // State for the approval status message
-  const [approvedProposal, setApprovedProposal] = useState<number>(0) // State for tracking the approval status of the proposal
-  const [taskId, setTaskId] = useState<number | null>(null) // State for storing the task ID
-  const [sedeId, setSedeId] = useState<number | null>(null) // State for storing the site ID (Sede)
+  const { profile } = useProfile()
+  const [pdfFile, setPdfFile] = useState<File | null>(null)
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [approvalMessage, setApprovalMessage] = useState("Pendiente Aprobar")
+  const [approvedProposal, setApprovedProposal] = useState<number>(0)
+  const [taskId, setTaskId] = useState<number | null>(null)
+  const [sedeId, setSedeId] = useState<number | null>(null)
 
   const propuestas = [
     { id: 1, titulo: "Propuesta 1" },
@@ -28,27 +28,11 @@ const Proposal: React.FC = () => {
     { id: 3, titulo: "Propuesta 3" },
   ]
 
-  /**
-   * Effect hook to fetch initial data when the component mounts
-   */
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const perfilData = await getDatosPerfil() // Fetch profile data
-        const user_id = perfilData?.user_id // Extract user_id from profile data
-        const sede = perfilData?.sede // Extract sede (site) from profile data
-        setSedeId(sede) // Set the site ID state
-        if (user_id) {
-          fetchPropuesta(user_id) // Fetch proposal data if user_id exists
-        } else {
-          throw new Error("No se pudo obtener el ID del usuario.")
-        }
-      } catch (error: any) {
-        // Optionally show an alert for initial data fetch failure
-      }
-    }
-    fetchInitialData()
-  }, []) // Empty dependency array ensures this effect runs once when the component mounts
+    if (!profile) return
+    setSedeId(profile.sede)
+    fetchPropuesta(profile.user_id)
+  }, [profile])
 
   /**
    * Effect hook to fetch tasks when the site ID (sedeId) changes
@@ -140,11 +124,8 @@ const Proposal: React.FC = () => {
     }
     setLoading(true)
     try {
-      const perfilData = await getDatosPerfil()
-      const user_id = perfilData?.user_id
-      if (!user_id) {
-        throw new Error("No se pudo recuperar el ID del usuario.")
-      }
+      const user_id = profile?.user_id
+      if (!user_id) throw new Error("No se pudo recuperar el ID del usuario.")
       const propuestaExistente = await getPropuesta(user_id)
       if (propuestaExistente && propuestaExistente.approved_proposal === 0) {
         await updatePropuesta({

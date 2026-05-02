@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getDatosPerfil, type PerfilData } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { updateProfilePhoto } from "../../ts/General/PutPhotoProfile"
 import { FaCamera, FaUser, FaIdCard, FaBuilding } from "react-icons/fa"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
@@ -8,30 +8,21 @@ import ofiLogo from "../../images/Login/sistemas1_11zon.png"
 import Swal from "sweetalert2"
 
 const Profile = () => {
+  const { profile: profileData } = useProfile()
   const [profileImage, setProfileImage] = useState<string>()
-  const [profileData, setProfileData] = useState<PerfilData | null>(null)
   const [isUploading, setIsUploading] = useState(false)
-  const [storedRole, setStoredRole] = useState<number | null>(null);
-
+  const [storedRole, setStoredRole] = useState<number | null>(null)
 
   useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const data = await getDatosPerfil()
-        setProfileData(data)
-        if (data.profilePhoto) {
-          setProfileImage(data.profilePhoto)
-        } else {
-          setProfileImage(`${data.userName.charAt(0).toUpperCase()}`)
-        }
-        const roleStr = localStorage.getItem('userRole')
-        setStoredRole(roleStr ? parseInt(roleStr) : null)
-      } catch (error) {
-        // manejo de error
-      }
+    if (!profileData) return
+    if (profileData.profilePhoto) {
+      setProfileImage(profileData.profilePhoto)
+    } else {
+      setProfileImage(profileData.userName.charAt(0).toUpperCase())
     }
-    fetchProfileData()
-  }, [])
+    const roleStr = localStorage.getItem('userRole')
+    setStoredRole(roleStr ? parseInt(roleStr) : null)
+  }, [profileData])
 
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

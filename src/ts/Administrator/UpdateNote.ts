@@ -18,7 +18,7 @@ export const updateNote = async (
         }
 
         // Make the PUT request to update the note
-        await axios.put(`${import.meta.env.VITE_API_URL}/notas/update`, notaData, {
+        await axios.put(`${import.meta.env.VITE_API_URL}/grades/update`, notaData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',

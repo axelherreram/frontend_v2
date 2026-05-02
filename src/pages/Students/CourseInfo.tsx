@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { getTareas } from "../../ts/General/GetTasks"
 import { getTareasEstudiante } from "../../ts/Students/GetTasksStudent"
 import ThesisDeliveryModal from "../../components/Modals/ThesisDeliveryModal"
@@ -15,6 +15,7 @@ import type React from "react"
 const CourseInfo: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
+  const { profile } = useProfile()
   const { courseTitle, courseId } = location.state || {}
   const [tareas, setTareas] = useState<any[]>([])
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0)
@@ -29,12 +30,12 @@ const CourseInfo: React.FC = () => {
    */
   useEffect(() => {
     const fetchTareas = async () => {
+      if (!profile) return
       setLoading(true)
       try {
-        const perfil = await getDatosPerfil()
         const currentYear = new Date().getFullYear()
-        const tareasGenerales = await getTareas(perfil.sede, courseId, currentYear)
-        const tareasEstudiante = await getTareasEstudiante(perfil.user_id, currentYear, perfil.sede)
+        const tareasGenerales = await getTareas(profile.sede, courseId, currentYear)
+        const tareasEstudiante = await getTareasEstudiante(profile.user_id, currentYear, profile.sede)
         const tareasCombinadas = tareasGenerales
           .map((tarea) => {
             const tareaEstudiante = tareasEstudiante.find((t) => t.task_id === tarea.task_id)

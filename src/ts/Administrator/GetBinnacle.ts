@@ -13,7 +13,7 @@ export const getBitacora = async (sedeId: number): Promise<any> => {
     }
 
     // Define the URL for the GET request, using the provided sedeId to specify the location
-    const url = `${import.meta.env.VITE_API_URL}/bitacora/${sedeId}`;
+    const url = `${import.meta.env.VITE_API_URL}/logs/${sedeId}`;
     
     // Make the GET request to the API with the appropriate headers
     const response = await axios.get(url, {

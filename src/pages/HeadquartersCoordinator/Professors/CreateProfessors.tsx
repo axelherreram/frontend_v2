@@ -1,36 +1,21 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getDatosPerfil } from "../../../ts/General/GetProfileData"
+import { useProfile } from "../../../context/UserProfileContext"
 import { createCatedratico } from "../../../ts/HeadquartersCoordinator/CreateProfessor"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import Swal from "sweetalert2"
 import { UserPlus, Mail, Hash, Loader2 } from "lucide-react" // Import Lucide React icons
 
 const CreateProfessor = () => {
+  const { profile } = useProfile()
+  const headquarterId = profile?.sede ?? null
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [code, setCode] = useState("")
-  const [headquarterId, setHeadquarterId] = useState<number | null>(null)
   const [year, setYear] = useState<number>(new Date().getFullYear())
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const { sede } = await getDatosPerfil()
-        setHeadquarterId(sede)
-      } catch (err) {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Error al obtener la sede",
-          confirmButtonColor: "#ef4444",
-          confirmButtonText: "De Acuerdo",
-        })
-      }
-    }
-    fetchProfileData()
-  }, [])
+  // headquarterId is now derived directly from context
 
   const validateForm = () => {
     if (!name || !email || !code || headquarterId === null) {

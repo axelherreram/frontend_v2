@@ -1,7 +1,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { getDatosPerfil } from "../../../ts/General/GetProfileData"
-import { getYears } from "../../../ts/General/GetYears"
+import { useProfile } from "../../../context/UserProfileContext"
+import { useYears } from "../../../context/YearsContext"
 import { getStudents } from "../../../ts/General/GetStudents"
 import { getCursos } from "../../../ts/General/GetCourses"
 import { useNavigate } from "react-router-dom"
@@ -36,6 +36,10 @@ interface Curso {
  * Displays a list of students with filtering and pagination
  */
 const ListStudents: React.FC = () => {
+  // Global context hooks — no individual API calls needed
+  const { profile } = useProfile()
+  const { years: yearsData } = useYears()
+
   // State variables for managing students data, years, courses, etc.
   const [estudiantes, setEstudiantes] = useState<Estudiante[]>([]) // List of students
   const [years, setYears] = useState<number[]>([]) // List of available years
@@ -48,35 +52,28 @@ const ListStudents: React.FC = () => {
   const navigate = useNavigate() // To navigate to other pages
 
   /**
-   * Effect hook to fetch initial data
+   * Effect hook to initialize data once profile and years are loaded from context
    */
   useEffect(() => {
-    // Fetch initial data such as profile, years, and courses
-    const fetchInitialData = async () => {
-      const perfil = await getDatosPerfil() // Fetch profile data
-      const yearsRecuperados = await getYears() // Fetch available years
-      setYears(yearsRecuperados.map((yearObj) => yearObj.year)) // Set years in state
+    if (!profile || yearsData.length === 0) return
 
-      // Set the current year if it exists in the list
-      const currentYear = new Date().getFullYear().toString()
-      if (yearsRecuperados.map((yearObj) => yearObj.year.toString()).includes(currentYear)) {
-        setSelectedAño(currentYear) // Set current year as selected
-      }
+    const yearNumbers = yearsData.map((y) => y.year)
+    setYears(yearNumbers)
 
-      // Set the course based on the current month (June onwards -> course_id = 2, else course_id = 1)
-      const currentMonth = new Date().getMonth()
-      const initialCourseId = currentMonth >= 6 ? "2" : "1"
-      setSelectedCurso(initialCourseId)
-
-      // Fetch students and courses for the selected year and course if profile and year are available
-      if (perfil.sede && currentYear) {
-        fetchEstudiantes(perfil.sede, initialCourseId, currentYear) // Fetch students
-        fetchCursos(perfil.sede) // Fetch courses
-      }
+    const currentYear = new Date().getFullYear().toString()
+    if (yearNumbers.map(String).includes(currentYear)) {
+      setSelectedAño(currentYear)
     }
 
-    fetchInitialData() // Call the function to fetch data on initial render
-  }, []) // Empty dependency array ensures it runs only once on mount
+    const currentMonth = new Date().getMonth()
+    const initialCourseId = currentMonth >= 6 ? "2" : "1"
+    setSelectedCurso(initialCourseId)
+
+    if (profile.sede && currentYear) {
+      fetchEstudiantes(profile.sede, initialCourseId, currentYear)
+      fetchCursos(profile.sede)
+    }
+  }, [profile, yearsData])
 
   /**
    * Fetch students based on selected year, course, and campus
@@ -109,27 +106,24 @@ const ListStudents: React.FC = () => {
    * @param e - Change event from select
    */
   const handleAñoChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const añoSeleccionado = e.target.value // Get selected year
-    setSelectedAño(añoSeleccionado) // Update state with selected year
-    const perfil = await getDatosPerfil() // Fetch profile data
-    if (perfil.sede && añoSeleccionado) {
-      const cursosRecuperados = await getCursos(perfil.sede, Number.parseInt(añoSeleccionado)) // Fetch courses for selected year
-      setCursos(Array.isArray(cursosRecuperados) ? cursosRecuperados : []) // Set courses in state
+    const añoSeleccionado = e.target.value
+    setSelectedAño(añoSeleccionado)
+    if (profile?.sede && añoSeleccionado) {
+      const cursosRecuperados = await getCursos(profile.sede, Number.parseInt(añoSeleccionado))
+      setCursos(Array.isArray(cursosRecuperados) ? cursosRecuperados : [])
     }
-    if (perfil.sede && añoSeleccionado && selectedCurso) {
-      fetchEstudiantes(perfil.sede, selectedCurso, añoSeleccionado) // Fetch students for selected year and course
+    if (profile?.sede && añoSeleccionado && selectedCurso) {
+      fetchEstudiantes(profile.sede, selectedCurso, añoSeleccionado)
     }
   }
 
   /**
    * Handle change of selected course from dropdown
-   * @param e - Change event from select
    */
   const handleCursoChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCurso(e.target.value) // Update state with selected course
-    const perfil = await getDatosPerfil() // Fetch profile data
-    if (perfil.sede && selectedAño && e.target.value) {
-      fetchEstudiantes(perfil.sede, e.target.value, selectedAño) // Fetch students for selected year and course
+    setSelectedCurso(e.target.value)
+    if (profile?.sede && selectedAño && e.target.value) {
+      fetchEstudiantes(profile.sede, e.target.value, selectedAño)
     }
   }
 

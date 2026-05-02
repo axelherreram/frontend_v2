@@ -13,7 +13,7 @@ export const updateSede = async (sede_id: number, nameSede: string, address: str
 
     // Make the PUT request to update the 'sede' with the new name
     const response = await axios.put(
-      `${import.meta.env.VITE_API_URL}/sedes/${sede_id}`,  // URL with the 'sede_id' parameter
+      `${import.meta.env.VITE_API_URL}/locations/${sede_id}`,  // URL with the 'sede_id' parameter
       JSON.stringify({ nameSede, address }),  // The name of the 'sede' to update
       {
         headers: {

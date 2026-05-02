@@ -1,5 +1,5 @@
 import type React from "react"
-import { getDatosPerfil } from "../../../ts/General/GetProfileData"
+import { useProfile } from "../../../context/UserProfileContext"
 import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { getTareasSede, type Tarea } from "../../../ts/General/GetTasksHeadquarters"
@@ -12,22 +12,12 @@ import { ArrowLeft, FileText, BookOpen, Clock, CalendarDays, XCircle } from "luc
 const TasksStudent: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { profile } = useProfile()
   const [tareas, setTareas] = useState<Tarea[]>([])
-  const [sedeId, setSedeId] = useState<number | null>(null)
   const [tareasEstudiante, setTareasEstudiante] = useState<TareaEstudiante[]>([])
   const { estudiante, selectedAño, selectedCurso } = location.state || {}
 
-
-  useEffect(() => {
-    const fetchDatosPerfil = async () => {
-      try {
-        const { sede } = await getDatosPerfil() // Fetch the current sede
-        setSedeId(sede) // Set the sede ID in state
-      } catch (err) {}
-    }
-
-    fetchDatosPerfil()
-  }, []) 
+  const sedeId = profile?.sede ?? null
 
   useEffect(() => {
     const fetchTasks = async () => {

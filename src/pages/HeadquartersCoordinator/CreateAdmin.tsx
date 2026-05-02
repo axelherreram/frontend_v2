@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
 import { getAdmins } from "../../ts/HeadquartersCoordinator/GetAdmins"
 import { ActiveAdmin } from "../../ts/HeadquartersCoordinator/ActiveAdmin"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import ActivaAdmin from "../../components/Switchers/ActivateAdmin"
 import Swal from "sweetalert2"
 import TourCreateAdmin from "../../components/Tours/HeadquartersCoordinator/TourCreateAdmin"
@@ -26,6 +26,7 @@ interface Admin {
  * Component for creating and managing administrators
  */
 const CreateAdmin: React.FC = () => {
+  const { profile } = useProfile()
   const [admins, setAdmins] = useState<Admin[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [sedeId, setSedeId] = useState<number>(0)
@@ -34,18 +35,20 @@ const CreateAdmin: React.FC = () => {
   const [maxPageButtons, setMaxPageButtons] = useState(5)
 
   useEffect(() => {
-    fetchAdmins()
+    if (profile?.sede) {
+      fetchAdmins()
+    }
     window.addEventListener("resize", handleResize)
     handleResize()
     return () => {
       window.removeEventListener("resize", handleResize)
     }
-  }, [])
+  }, [profile])
 
   const fetchAdmins = async () => {
     try {
-      const perfil = await getDatosPerfil()
-      const currentSedeId = perfil.sede
+      if (!profile?.sede) return
+      const currentSedeId = profile.sede
       setSedeId(currentSedeId)
       const data = await getAdmins(currentSedeId)
       const transformedAdmins: Admin[] = data.map((admin: any) => ({

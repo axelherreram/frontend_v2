@@ -14,7 +14,7 @@ export const createComision = async (comisionData: {
     if (!token) throw new Error('Token de autenticación no encontrado');  // Error message for missing token
 
     // Make a POST request to the API to create the commission
-    await axios.post(`${import.meta.env.VITE_API_URL}/comisiones/grupo`, comisionData, {
+    await axios.post(`${import.meta.env.VITE_API_URL}/commissions/group`, comisionData, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the authentication token in the request headers
         'Content-Type': 'application/json',   // Specify that the content type is JSON

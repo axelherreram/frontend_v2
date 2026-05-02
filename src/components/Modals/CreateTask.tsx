@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { createTarea } from "../../ts/Administrator/CreateTasks"
 import { updateTarea } from "../../ts/Administrator/UpdateTask"
 import { getCursos } from "../../ts/General/GetCourses"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { getDatosTarea } from "../../ts/Administrator/GetTaskData"
 import Swal from "sweetalert2"
 
@@ -25,6 +25,7 @@ interface FormState {
 }
 
 const CreateTask: React.FC<CreateTaskProps> = ({ onClose, mode, taskId }) => {
+  const { profile } = useProfile()
   const [cursos, setCursos] = useState<any[]>([])
   const [form, setForm] = useState<FormState>({
     selectedCurso: "",
@@ -39,11 +40,11 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, mode, taskId }) => {
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
+    if (!profile?.sede) return
     const fetchCursos = async () => {
       try {
-        const { sede } = await getDatosPerfil()
         const currentYear = new Date().getFullYear()
-        const cursosData = await getCursos(sede, currentYear)
+        const cursosData = await getCursos(profile.sede!, currentYear)
         setCursos(cursosData || [])
       } catch (error) {
         Swal.fire({
@@ -59,7 +60,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, mode, taskId }) => {
     }
 
     fetchCursos()
-  }, [])
+  }, [profile])
 
   useEffect(() => {
     const fetchTaskData = async () => {
@@ -138,7 +139,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, mode, taskId }) => {
 
     try {
       setLoading(true)
-      const { sede } = await getDatosPerfil()
+      const sede = profile?.sede
       const selectedCourse = cursos.find((curso) => curso.course_id.toString() === selectedCurso)
 
       if (!selectedCourse) {

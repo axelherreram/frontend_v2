@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { getYears } from "../../ts/General/GetYears"
+import { useYears } from "../../context/YearsContext"
 import { getTareas } from "../../ts/General/GetTasks"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
 import TourCreatesTasks from "../../components/Tours/Administrator/TourCreatesTasks"
@@ -19,6 +19,7 @@ export interface Task {
 }
 
 const CreateTasks = () => {
+  const { years: yearsData } = useYears()
   const [selectedCourse, setSelectedCourse] = useState("")
   const [selectedYear, setSelectedYear] = useState("")
   const [years, setYears] = useState<number[]>([])
@@ -30,18 +31,19 @@ const CreateTasks = () => {
   const { selectedSede } = useSede()
 
   useEffect(() => {
+    if (yearsData.length === 0) return
     const fetchInitialData = async () => {
-      const retrievedYears = await getYears()
-      setYears(retrievedYears.map((yearObj) => yearObj.year))
+      const yearNumbers = yearsData.map((y) => y.year)
+      setYears(yearNumbers)
       const currentYear = new Date().getFullYear()
-      if (retrievedYears.some((yearObj) => yearObj.year === currentYear)) {
+      if (yearNumbers.includes(currentYear)) {
         setSelectedYear(currentYear.toString())
       }
     }
     fetchInitialData()
     const currentMonth = new Date().getMonth() + 1
     setSelectedCourse(currentMonth > 6 ? "2" : "1")
-  }, [])
+  }, [yearsData])
 
   useEffect(() => {
     const fetchCoursesAndUpdateTasks = async () => {

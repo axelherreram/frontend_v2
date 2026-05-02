@@ -28,7 +28,7 @@ export const getTareasSede = async (
 
     // Make the GET request to the API URL with the `sedeId` and `year` parameters
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/tareas/${sedeId}/${year}`,
+      `${import.meta.env.VITE_API_URL}/tasks/${sedeId}/${year}`,
       {
         headers: {
           'Authorization': `Bearer ${token}`,  // Add the token in the authorization header

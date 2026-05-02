@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { getDatosPerfil } from "../../../ts/General/GetProfileData"
+import { useProfile } from "../../../context/UserProfileContext"
 import { getCatedraticos } from "../../../ts/HeadquartersCoordinator/GetProfessor"
 import { activaUsuario } from "../../../ts/HeadquartersCoordinator/ActivateProfessor"
 import type React from "react"
@@ -23,6 +23,7 @@ interface Professor {
 }
 
 const ListProfessors: React.FC = () => {
+  const { profile } = useProfile()
   const [professors, setProfessors] = useState<Professor[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [professorsPerPage, setProfessorsPerPage] = useState(5)
@@ -44,18 +45,10 @@ const ListProfessors: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const profile = await getDatosPerfil()
-        if (profile.sede) {
-          fetchProfessors(profile.sede)
-        }
-      } catch {
-        setProfessors([])
-      }
+    if (profile?.sede) {
+      fetchProfessors(profile.sede)
     }
-    fetchProfile()
-  }, [])
+  }, [profile])
 
   const fetchProfessors = async (headquartersId: number) => {
     try {

@@ -2,7 +2,7 @@ import type { ApexOptions } from "apexcharts"
 import type React from "react"
 import { useEffect, useState } from "react"
 import ReactApexChart from "react-apexcharts"
-import { getDatosPerfil } from "../../../ts/General/GetProfileData"
+import { useProfile } from "../../../context/UserProfileContext"
 import { getTaskStats } from "../../../ts/Administrator/GetTaskStat"
 import { Loader2 } from "lucide-react" // Import spinner icon
 
@@ -12,6 +12,7 @@ interface ChartData {
 }
 
 const TasksStudents: React.FC = () => {
+  const { profile } = useProfile()
   const [chartData, setChartData] = useState<ChartData>({
     series: [
       { name: "Estudiantes Pendientes", data: [] },
@@ -31,11 +32,11 @@ const TasksStudents: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!profile?.sede) return
       setIsLoading(true)
       try {
-        const perfil = await getDatosPerfil()
         const currentYear = new Date().getFullYear()
-        const sedeId = perfil.sede
+        const sedeId = profile.sede
         const stats = await getTaskStats(courseId, currentYear, sedeId)
         const totalStudents = stats.find((s) => s.totalStudents !== undefined)?.totalStudents || 10
         setMaxYValue(totalStudents)
@@ -72,7 +73,7 @@ const TasksStudents: React.FC = () => {
     }
 
     fetchData()
-  }, [courseId])
+  }, [courseId, profile])
 
   const handleCourseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setCourseId(Number(event.target.value))

@@ -1,6 +1,6 @@
 import type React from "react"
 import { useEffect, useState } from "react"
-import { getDatosPerfil, type PerfilData } from "../../../ts/General/GetProfileData.ts"
+import { useProfile } from "../../../context/UserProfileContext"
 import { getStudentsSede } from "../../../ts/Administrator/GetStudentsSede.ts"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb.tsx"
 import CardDataStats from "../../../components/Cards/CardDataStats.tsx"
@@ -13,6 +13,7 @@ import { Users, CheckCircle, Clock, MapPin, GraduationCap } from "lucide-react" 
  * Displays statistical data and charts for students and revisions
  */
 const Graphics: React.FC = () => {
+  const { profile } = useProfile()
   // State to store the total number of students, total students per sede, and revision data
   const [totalStudents, setTotalStudents] = useState<number | null>(null)
   const [totalStudentsSede, setTotalStudentsSede] = useState<number | null>(null)
@@ -25,11 +26,10 @@ const Graphics: React.FC = () => {
    */
   useEffect(() => {
     const fetchData = async () => {
+      if (!profile?.sede) return
       setIsLoading(true)
       try {
-        // Fetching profile data
-        const perfilData: PerfilData = await getDatosPerfil()
-        const sedeId = perfilData.sede // Getting the 'sede' id from the profile data
+        const sedeId = profile.sede // Getting the 'sede' id from the profile data
         if (sedeId) {
           // Fetching students data for the specific 'sede'
           const studentsData = await getStudentsSede(sedeId)
@@ -51,7 +51,7 @@ const Graphics: React.FC = () => {
     }
     // Invoking the function to fetch data
     fetchData()
-  }, [])
+  }, [profile])
 
   // Calculate percentages for display
   const studentSedePercentage =

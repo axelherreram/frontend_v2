@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getDatosPerfil } from '../../../ts/General/GetProfileData';
+import { useProfile } from '../../../context/UserProfileContext';
 import { getCatedraticosActivos } from '../../../ts/HeadquartersCoordinator/GetProfessorActive';
 import { createComision } from '../../../ts/HeadquartersCoordinator/CreateCommission';
 import { getComisiones } from '../../../ts/HeadquartersCoordinator/GetCommissions';
@@ -15,46 +15,33 @@ interface Professor {
 }
 
 const CreateCommission: React.FC = () => {
-  // State hooks to manage the component's state
-  const [professors, setProfessors] = useState<Professor[]>([]) // List of active professors
-  const [selectedGroup, setSelectedGroup] = useState<Professor[]>([]) // Group of selected professors for the commission
-  const [loading, setLoading] = useState<boolean>(true) // Loading state for fetching data
-  const [commissionExists, setCommissionExists] = useState<boolean>(false) // Check if a commission already exists
+  const { profile } = useProfile()
+  const [professors, setProfessors] = useState<Professor[]>([])
+  const [selectedGroup, setSelectedGroup] = useState<Professor[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [commissionExists, setCommissionExists] = useState<boolean>(false)
 
   /**
    * useEffect hook to fetch the data when the component mounts
    */
   useEffect(() => {
+    if (!profile) return
     const fetchData = async () => {
       try {
-        // Fetch user profile data (includes the 'headquarters' the user is related to)
-        const profile = await getDatosPerfil()
-        const year = new Date().getFullYear() // Get the current year
-
+        const year = new Date().getFullYear()
         if (profile.sede) {
-          // Fetch active professors based on the 'headquarters' and year
           const retrievedProfessors = await getCatedraticosActivos(profile.sede, year)
           setProfessors(retrievedProfessors)
-
-          // Fetch commissions for the current year and 'headquarters'
           const retrievedCommissions = await getComisiones(profile.sede, year)
-
-          // If there are existing commissions, set the flag to true
-          if (retrievedCommissions.length > 0) {
-            setCommissionExists(true)
-          }
+          if (retrievedCommissions.length > 0) setCommissionExists(true)
         }
-      } catch (error) {
-        // Log any errors that occur during data fetching
-        
+      } catch {
       } finally {
-        // Set loading state to false once data fetching is done
         setLoading(false)
       }
     }
-
-    fetchData() // Call the function to fetch data
-  }, []) // Empty dependency array ensures this runs only once on mount
+    fetchData()
+  }, [profile])
 
   /**
    * Handler to add a professor to the 'selectedGroup' when dragging
@@ -78,43 +65,24 @@ const CreateCommission: React.FC = () => {
    */
   const handleCreateCommission = async () => {
     try {
-      const profile = await getDatosPerfil() // Get the user profile data
-      const year = new Date().getFullYear() // Get the current year
-
-      if (!profile.sede) {
-        // If 'headquarters' is not found, show an error alert
-        showAlert("error", "¡Error!", "No se pudo recuperar la sede.")
+      const year = new Date().getFullYear()
+      if (!profile?.sede) {
+        showAlert("error", "\u00a1Error!", "No se pudo recuperar la sede.")
         return
       }
-
-      // Prepare the group data for the commission
       const groupData = selectedGroup.map((professor, index) => ({
-        user_id: professor.user_id, // Professor's user ID
-        rol_comision_id: index + 1, // Role ID based on position in the 'selectedGroup'
+        user_id: professor.user_id,
+        rol_comision_id: index + 1,
       }))
-
-      const commissionData = {
-        year, // Current year
-        sede_id: profile.sede, // 'Headquarters' ID from the profile
-        groupData, // The group of professors
-      }
-
-      // Create the commission using the prepared data
+      const commissionData = { year, sede_id: profile.sede, groupData }
       await createComision(commissionData)
-
-      // Fetch updated commissions to check if a commission exists
       const retrievedCommissions = await getComisiones(profile.sede, year)
       setCommissionExists(retrievedCommissions.length > 0)
-
-      // Show a success alert
-      showAlert("success", "¡Éxito!", "La comisión fue creada exitosamente.")
-
-      // Fetch updated list of professors
+      showAlert("success", "\u00a1\u00c9xito!", "La comisi\u00f3n fue creada exitosamente.")
       const retrievedProfessors = await getCatedraticosActivos(profile.sede, year)
       setProfessors(retrievedProfessors)
-      setSelectedGroup([]) // Reset the 'selectedGroup' after commission creation
-    } catch (error: any) {
-      // Handle any errors that occur during commission creation
+      setSelectedGroup([])
+    } catch {
     }
   }
 

@@ -1,7 +1,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { getCatedraticosActivos } from "../../ts/HeadquartersCoordinator/GetProfessorActive"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
 import { asignarCatedraticoComision } from "../../ts/HeadquartersCoordinator/AssignsProfessorCommission"
 import Swal from "sweetalert2"
 
@@ -27,19 +27,18 @@ const ROLES_CODIGOS: { [key: string]: number } = {
 }
 
 const ListProfessors: React.FC<ListProfessorsModalProps> = ({ onClose, selectedRow, groupId }) => {
+  const { profile } = useProfile()
   const [catedraticos, setCatedraticos] = useState<Catedratico[]>([])
   const [selectedCatedratico, setSelectedCatedratico] = useState<Catedratico | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
+    if (!profile?.sede) return
     const fetchCatedraticos = async () => {
       try {
-        const perfil = await getDatosPerfil()
         const year = new Date().getFullYear()
-        if (perfil.sede) {
-          const catedraticosRecuperados = await getCatedraticosActivos(perfil.sede, year)
-          setCatedraticos(catedraticosRecuperados)
-        }
+        const catedraticosRecuperados = await getCatedraticosActivos(profile.sede!, year)
+        setCatedraticos(catedraticosRecuperados)
       } catch (error) {
         // Error handling
       } finally {
@@ -48,7 +47,7 @@ const ListProfessors: React.FC<ListProfessorsModalProps> = ({ onClose, selectedR
     }
 
     fetchCatedraticos()
-  }, [])
+  }, [profile])
 
   const handleSelect = (catedratico: Catedratico) => {
     setSelectedCatedratico(catedratico)

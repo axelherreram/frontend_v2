@@ -17,7 +17,7 @@ export const deleteUserComision = async (groupId: number, userId: number): Promi
     }
 
     // Make the DELETE request to the API endpoint, passing the groupId and userId
-    const response = await axios.delete(`${import.meta.env.VITE_API_URL}/comisiones/${groupId}/usuario/${userId}`, {
+    const response = await axios.delete(`${import.meta.env.VITE_API_URL}/commissions/${groupId}/member/${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Include the authentication token in the request headers
         'Content-Type': 'application/json',  // Specify the content type as JSON

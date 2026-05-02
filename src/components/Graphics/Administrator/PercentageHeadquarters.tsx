@@ -2,7 +2,7 @@ import type { ApexOptions } from "apexcharts"
 import type React from "react"
 import { useEffect, useState } from "react"
 import ReactApexChart from "react-apexcharts"
-import { getDatosPerfil } from "../../../ts/General/GetProfileData"
+import { useProfile } from "../../../context/UserProfileContext"
 import { getSedeComplete, type SedeStats } from "../../../ts/Administrator/GetCompleteHeadquarters"
 import { Loader2 } from "lucide-react" // Import spinner icon
 
@@ -20,6 +20,7 @@ interface ChartData {
  * It fetches the required data from backend services and renders it dynamically.
  */
 const PercentageHeadquarters: React.FC = () => {
+  const { profile } = useProfile()
   // State to store chart data including series and labels
   const [chartData, setChartData] = useState<ChartData>({
     series: [],
@@ -35,12 +36,11 @@ const PercentageHeadquarters: React.FC = () => {
    */
   useEffect(() => {
     const fetchData = async () => {
+      if (!profile?.sede) return
       setIsLoading(true)
       try {
-        // Fetch user profile data
-        const perfil = await getDatosPerfil()
         // Get the current 'sede' (campus) from the profile data
-        const sedeId = perfil.sede
+        const sedeId = profile.sede
         // Fetch advanced task statistics for the given 'sedeId'
         const stats: SedeStats = await getSedeComplete(sedeId)
         // If stats are available, update the chart data
@@ -64,7 +64,7 @@ const PercentageHeadquarters: React.FC = () => {
       }
     }
     fetchData() // Call the function to fetch data
-  }, []) // Empty dependency array ensures it runs once on mount
+  }, [profile]) // Re-run when profile changes
 
   // Configuration options for the pie chart
   const options: ApexOptions = {

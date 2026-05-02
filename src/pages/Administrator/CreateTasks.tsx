@@ -3,8 +3,8 @@ import { useState, useEffect } from "react"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
 import CreaTarea from "../../components/Modals/CreateTask"
 import { getCursos } from "../../ts/General/GetCourses"
-import { getYears } from "../../ts/General/GetYears"
-import { getDatosPerfil } from "../../ts/General/GetProfileData"
+import { useProfile } from "../../context/UserProfileContext"
+import { useYears } from "../../context/YearsContext"
 import { getTareas } from "../../ts/General/GetTasks"
 import TourCreatesTasks from "../../components/Tours/Administrator/TourCreatesTasks"
 import { CalendarDays, Book, PlusCircle, Edit, ChevronLeft, ChevronRight, XCircle } from "lucide-react"
@@ -29,87 +29,67 @@ export interface Task {
  * Component for creating and managing tasks
  */
 const CreateTasks: React.FC = () => {
-  // State hooks for managing component data
-  const [isModalOpen, setIsModalOpen] = useState(false) // Controls the modal visibility
-  const [selectedCourse, setSelectedCourse] = useState("") // Stores selected course
-  const [selectedYear, setSelectedYear] = useState("") // Stores selected year
-  const [years, setYears] = useState<number[]>([]) // List of years
-  const [courses, setCourses] = useState<any[]>([]) // List of courses
-  const [tasks, setTasks] = useState<Task[]>([]) // List of tasks
-  const [modalMode, setModalMode] = useState<"create" | "edit">("create") // Determines if modal is in "create" or "edit" mode
-  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null) // Stores selected task ID for editing
-  const [currentPage, setCurrentPage] = useState(1) // Current page number for pagination
-  const [tasksPerPage, setTasksPerPage] = useState(3) // Number of tasks per page
-  const [maxPageButtons, setMaxPageButtons] = useState(5) // Maximum number of page buttons to display
+  const { profile } = useProfile()
+  const { years: yearsData } = useYears()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedCourse, setSelectedCourse] = useState("")
+  const [selectedYear, setSelectedYear] = useState("")
+  const [years, setYears] = useState<number[]>([])
+  const [courses, setCourses] = useState<any[]>([])
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create")
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [tasksPerPage, setTasksPerPage] = useState(3)
+  const [maxPageButtons, setMaxPageButtons] = useState(5)
 
-  /**
-   * Effect hook to fetch initial data for years and set the current year if available
-   */
+  // Initialize years from context
   useEffect(() => {
-    const fetchInitialData = async () => {
-      const retrievedYears = await getYears() // Fetch available years
-      setYears(retrievedYears.map((yearObj) => yearObj.year)) // Set years to state
-      const currentYear = new Date().getFullYear() // Get current year
-      if (retrievedYears.some((yearObj) => yearObj.year === currentYear)) {
-        setSelectedYear(currentYear.toString()) // Set current year as selected year
-      }
-    }
-    fetchInitialData() // Call the fetch function to load initial data
-    const currentMonth = new Date().getMonth() + 1 // Get current month
-    setSelectedCourse(currentMonth > 6 ? "2" : "1") // Set the selected course based on the current month
-  }, [])
+    if (yearsData.length === 0) return
+    const yearNumbers = yearsData.map((y) => y.year)
+    setYears(yearNumbers)
+    const currentYear = new Date().getFullYear()
+    if (yearNumbers.includes(currentYear)) setSelectedYear(currentYear.toString())
+    const currentMonth = new Date().getMonth() + 1
+    setSelectedCourse(currentMonth > 6 ? "2" : "1")
+  }, [yearsData])
 
   /**
    * Effect hook to fetch courses when the selected year changes
    */
   useEffect(() => {
+    if (!profile || !selectedYear) return
     const fetchCoursesAndUpdateTasks = async () => {
-      if (selectedYear) {
-        const profile = await getDatosPerfil() // Fetch user profile
-        const retrievedCourses = await getCursos(profile.sede, Number(selectedYear)) // Fetch courses based on selected year and profile data
-        setCourses(Array.isArray(retrievedCourses) ? retrievedCourses : []) // Set courses to state
-        const currentMonth = new Date().getMonth() + 1 // Get current month
-        setSelectedCourse(currentMonth > 6 ? "2" : "1") // Set selected course based on the current month
-      }
+      const retrievedCourses = await getCursos(profile.sede, Number(selectedYear))
+      setCourses(Array.isArray(retrievedCourses) ? retrievedCourses : [])
+      const currentMonth = new Date().getMonth() + 1
+      setSelectedCourse(currentMonth > 6 ? "2" : "1")
     }
-    fetchCoursesAndUpdateTasks() // Call the fetch function when selected year changes
-  }, [selectedYear])
+    fetchCoursesAndUpdateTasks()
+  }, [selectedYear, profile])
 
-  /**
-   * Effect hook to fetch tasks when the selected course or year changes
-   */
   useEffect(() => {
+    if (!profile || !selectedCourse || !selectedYear) return
     const fetchTasks = async () => {
-      if (selectedCourse && selectedYear) {
-        const profile = await getDatosPerfil() // Fetch user profile
-        const retrievedTasks = await getTareas(profile.sede, Number(selectedCourse), Number(selectedYear))
-        // Sort tasks in descending order by task_id
-        const sortedTasks = retrievedTasks.sort((a: Task, b: Task) => {
-          return b.task_id - a.task_id // Sort in descending order
-        })
-        setTasks(Array.isArray(sortedTasks) ? sortedTasks : []) // Set tasks to state
-      }
+      const retrievedTasks = await getTareas(profile.sede, Number(selectedCourse), Number(selectedYear))
+      const sortedTasks = retrievedTasks.sort((a: Task, b: Task) => b.task_id - a.task_id)
+      setTasks(Array.isArray(sortedTasks) ? sortedTasks : [])
     }
-    fetchTasks() // Call the fetch function when selected course or year changes
-  }, [selectedCourse, selectedYear])
+    fetchTasks()
+  }, [selectedCourse, selectedYear, profile])
 
   /**
    * Handle closing the modal and fetching tasks again
    */
   const handleModalClose = () => {
-    setIsModalOpen(false) // Close the modal
+    setIsModalOpen(false)
+    if (!profile || !selectedCourse || !selectedYear) return
     const fetchTasks = async () => {
-      if (selectedCourse && selectedYear) {
-        const profile = await getDatosPerfil() // Fetch user profile
-        const retrievedTasks = await getTareas(profile.sede, Number(selectedCourse), Number(selectedYear))
-        // Sort tasks in descending order by task_id
-        const sortedTasks = retrievedTasks.sort((a: Task, b: Task) => {
-          return b.task_id - a.task_id // Sort in descending order
-        })
-        setTasks(Array.isArray(sortedTasks) ? sortedTasks : []) // Set tasks to state
-      }
+      const retrievedTasks = await getTareas(profile.sede, Number(selectedCourse), Number(selectedYear))
+      const sortedTasks = retrievedTasks.sort((a: Task, b: Task) => b.task_id - a.task_id)
+      setTasks(Array.isArray(sortedTasks) ? sortedTasks : [])
     }
-    fetchTasks() // Call the fetch function when modal is closed
+    fetchTasks()
   }
 
   /**

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getComisionesIndiv } from '../../../ts/HeadquartersCoordinator/GetIndivComissions';
-import { getDatosPerfil } from '../../../ts/General/GetProfileData';
+import { useProfile } from '../../../context/UserProfileContext';
 import { FaTrashAlt, FaUserPlus } from 'react-icons/fa';
 import { deleteUserComision } from '../../../ts/HeadquartersCoordinator/DeleteUserCommission';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
@@ -31,49 +31,51 @@ const ROLE_CODES: { [key: string]: number } = {
 const TOTAL_ROWS = 5 // Total number of rows to display (5 roles)
 
 const ListCommission: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]) // State to store list of users
-  const [loading, setLoading] = useState<boolean>(true) // Loading state
-  const [showModal, setShowModal] = useState<boolean>(false) // State to show/hide modal
-  const [selectedRow, setSelectedRow] = useState<number | null>(null) // State to store the selected row
-  const [groupId, setGroupId] = useState<number | null>(null) // State to store group ID
+  const { profile } = useProfile()
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const [selectedRow, setSelectedRow] = useState<number | null>(null)
+  const [groupId, setGroupId] = useState<number | null>(null)
 
-  /**
-   * Fetch data when component is mounted
-   */
+  const refreshUsers = async () => {
+    if (!profile?.sede) return
+    const year = new Date().getFullYear()
+    const groups = await getComisionesIndiv(profile.sede, year)
+    const userList = groups.flatMap((group) =>
+      group.groupData.users.map((user) => ({
+        userId: user.userId, nombre: user.nombre, rol: user.rol, carnet: user.carnet,
+      }))
+    )
+    setUsers(userList)
+  }
+
   useEffect(() => {
+    if (!profile) return
     const fetchData = async () => {
       try {
-        const profile = await getDatosPerfil() // Fetch user profile data
-        const year = new Date().getFullYear() // Get current year
-
+        const year = new Date().getFullYear()
         if (profile.sede) {
-          const groups = await getComisionesIndiv(profile.sede, year) // Fetch commissions for the current year
-
+          const groups = await getComisionesIndiv(profile.sede, year)
           if (groups.length === 0) {
-            // If no commissions, show a message
             setUsers([])
           } else {
-            setGroupId(groups[0].groupId) // Set the group ID
+            setGroupId(groups[0].groupId)
             const userList = groups.flatMap((group) =>
               group.groupData.users.map((user) => ({
-                userId: user.userId,
-                nombre: user.nombre,
-                rol: user.rol,
-                carnet: user.carnet,
-              })),
+                userId: user.userId, nombre: user.nombre, rol: user.rol, carnet: user.carnet,
+              }))
             )
-            setUsers(userList) // Set users for the current group
+            setUsers(userList)
           }
         }
-      } catch (error) {
-        
+      } catch {
       } finally {
-        setLoading(false) // Set loading to false after data fetch
+        setLoading(false)
       }
     }
-
     fetchData()
-  }, []) // Empty dependency array, meaning the effect will run only once when the component is mounted
+  }, [profile])
 
   /**
    * This function creates an array of users with empty spaces if needed
@@ -117,32 +119,9 @@ const ListCommission: React.FC = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await deleteUserComision(groupId, userId) // Call API to delete user
-
-        // Show success alert
-        Swal.fire({
-          icon: "success",
-          title: "Usuario eliminado",
-          text: response.message,
-          confirmButtonColor: "#10b981",
-          confirmButtonText: "De Acuerdo",
-        })
-
-        // Re-fetch the data after deletion
-        const profile = await getDatosPerfil()
-        const year = new Date().getFullYear()
-        if (profile.sede) {
-          const groups = await getComisionesIndiv(profile.sede, year)
-          const userList = groups.flatMap((group) =>
-            group.groupData.users.map((user) => ({
-              userId: user.userId,
-              nombre: user.nombre,
-              rol: user.rol,
-              carnet: user.carnet,
-            })),
-          )
-          setUsers(userList)
-        }
+        await deleteUserComision(groupId, userId)
+        Swal.fire({ icon: "success", title: "Usuario eliminado", text: "Usuario eliminado de la comisi\u00f3n.", confirmButtonColor: "#10b981", confirmButtonText: "De Acuerdo" })
+        await refreshUsers()
       } catch (error: any) {
         // Show error alert if there is a problem deleting the user
         Swal.fire({
@@ -164,27 +143,10 @@ const ListCommission: React.FC = () => {
     setShowModal(true) // Show the modal
   }
 
-  /**
-   * Close the modal and re-fetch the data
-   */
   const closeModal = async () => {
-    setShowModal(false) // Hide the modal
-    setSelectedRow(null) // Reset the selected row
-
-    const profile = await getDatosPerfil()
-    const year = new Date().getFullYear()
-    if (profile.sede) {
-      const groups = await getComisionesIndiv(profile.sede, year)
-      const userList = groups.flatMap((group) =>
-        group.groupData.users.map((user) => ({
-          userId: user.userId,
-          nombre: user.nombre,
-          rol: user.rol,
-          carnet: user.carnet,
-        })),
-      )
-      setUsers(userList) // Update the user list
-    }
+    setShowModal(false)
+    setSelectedRow(null)
+    await refreshUsers()
   }
 
   // Show loading message while data is being fetched

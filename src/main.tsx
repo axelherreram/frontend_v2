@@ -10,7 +10,9 @@ import 'jsvectormap/dist/css/jsvectormap.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import Swal from 'sweetalert2';
 import { SedeProvider } from './components/ReloadPages/HeadquarterPagesContext';
-import { SedesProvider } from "./components/ReloadPages/HeadquarterSelectContext"
+import { SedesProvider } from "./components/ReloadPages/HeadquarterSelectContext";
+import { UserProfileProvider } from './context/UserProfileContext';
+import { YearsProvider } from './context/YearsContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -41,17 +43,21 @@ root.render(
         <SedesProvider>
             <SedeProvider>
                 <Router>
-                    <Routes>
-                        <Route path="/" element={<Login />} />
-                        <Route path="/estudiantes/*" element={<App />} />
-                        <Route path="/administrador/*" element={<App />} />
-                        <Route path="/coordinadorsede/*" element={<App />} />
-                        <Route path="/coordinadortesis/*" element={<App />} />
-                        <Route path="/coordinadorgeneral/*" element={<App />} />
-                        <Route path="/revisortesis/*" element={<App />} />
-                        <Route path="/cambia/contraseña" element={<ProtectedRouteCambiaContra />} />
-                        <Route path="/recuperar-contraseña" element={<RecuperarContra />} />
-                    </Routes>
+                    <UserProfileProvider>
+                        <YearsProvider>
+                            <Routes>
+                                <Route path="/" element={<Login />} />
+                                <Route path="/estudiantes/*" element={<App />} />
+                                <Route path="/administrador/*" element={<App />} />
+                                <Route path="/coordinadorsede/*" element={<App />} />
+                                <Route path="/coordinadortesis/*" element={<App />} />
+                                <Route path="/coordinadorgeneral/*" element={<App />} />
+                                <Route path="/revisortesis/*" element={<App />} />
+                                <Route path="/cambia/contraseña" element={<ProtectedRouteCambiaContra />} />
+                                <Route path="/recuperar-contraseña" element={<RecuperarContra />} />
+                            </Routes>
+                        </YearsProvider>
+                    </UserProfileProvider>
                 </Router>
             </SedeProvider>
         </SedesProvider>
