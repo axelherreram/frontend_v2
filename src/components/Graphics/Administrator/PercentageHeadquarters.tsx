@@ -47,8 +47,8 @@ const PercentageHeadquarters: React.FC = () => {
         if (stats) {
           setChartData({
             series: [
-              Number.parseFloat(stats.completionRate), // Completion rate
-              Number.parseFloat(stats.pendingRate), // Pending rate
+              Number.parseFloat(stats.completionRate) || 0, // Completion rate
+              Number.parseFloat(stats.pendingRate) || 0, // Pending rate
             ],
             labels: ["Completado", "Pendiente"], // Labels for the chart
           })

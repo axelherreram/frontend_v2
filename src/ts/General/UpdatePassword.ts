@@ -12,7 +12,7 @@ export const updatePassword = async (oldPassword: string, newPassword: string): 
 
     // Make the PUT request to update the password
     const response = await axios.put(
-      `${import.meta.env.VITE_API_URL}/updatePassword`,
+      `${import.meta.env.VITE_AUTH_URL}/updatePassword`,
       JSON.stringify({ currentPassword: oldPassword, newPassword }), // Ensure to use 'currentPassword' instead of 'oldPassword'
       {
         headers: {

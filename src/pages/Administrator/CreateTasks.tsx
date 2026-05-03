@@ -93,13 +93,14 @@ const CreateTasks: React.FC = () => {
   }
 
   /**
-   * Format time from 24-hour format to 12-hour format
+   * Format time from 24-hour format to 12-hour format with null check
    */
-  const formatTime24Hour = (timeStr: string) => {
+  const formatTime24Hour = (timeStr: string | null | undefined) => {
+    if (!timeStr) return "N/A"
     const [hours, minutes, seconds] = timeStr.split(":").map(Number) // Split time string into hours, minutes, and seconds
     const amPm = hours < 12 ? "AM" : "PM" // Determine AM or PM
     const formattedHours = hours % 12 || 12 // Convert to 12-hour format, 0 becomes 12
-    return `${formattedHours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")} ${amPm}` // Return formatted time
+    return `${formattedHours.toString().padStart(2, "0")}:${(minutes || 0).toString().padStart(2, "0")}:${(seconds || 0).toString().padStart(2, "0")} ${amPm}` // Return formatted time
   }
 
   // Pagination logic
@@ -129,9 +130,10 @@ const CreateTasks: React.FC = () => {
   }
 
   /**
-   * Function to format a date string to a readable format
+   * Function to format a date string to a readable format with null check
    */
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return "N/A"
     const date = new Date(dateStr) // Create a Date object from the string
     return `${date.getUTCDate().toString().padStart(2, "0")}/${(date.getUTCMonth() + 1).toString().padStart(2, "0")}/${date.getUTCFullYear()}` // Return formatted date
   }
@@ -159,25 +161,7 @@ const CreateTasks: React.FC = () => {
   // Check if the selected year is the current year
   const isCurrentYear = selectedYear === new Date().getFullYear().toString()
 
-  // If no courses are available, show a message
-  if (courses.length === 0) {
-    return (
-      <>
-        <Breadcrumb pageName="Crear Tareas" />
-        <div className="mx-auto max-w-6xl px-4 py-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl mb-6 flex flex-col items-center justify-center text-center">
-            <XCircle className="h-20 w-20 mb-6 text-red-500" />
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              No existen cursos asignados a esta sede.
-            </p>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              Por favor, comuníquese con central para asignar cursos.
-            </p>
-          </div>
-        </div>
-      </>
-    )
-  }
+
 
   return (
     <>
@@ -265,8 +249,19 @@ const CreateTasks: React.FC = () => {
             </div>
           </div>
           {/* Tasks List */}
-          <div className="p-8">
-            {tasks.length > 0 ? (
+          {courses.length === 0 ? (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 flex flex-col items-center justify-center text-center mt-6">
+              <XCircle className="h-20 w-20 mb-6 text-red-500" />
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                No existen cursos asignados a esta sede.
+              </p>
+              <p className="text-lg text-gray-600 dark:text-gray-400">
+                Por favor, cambie de año o comuníquese con central para asignar cursos.
+              </p>
+            </div>
+          ) : (
+            <div className="p-8">
+              {tasks.length > 0 ? (
               <div id="tareas-list" className="space-y-6">
                 {currentTasks.map((task) => (
                   <div
@@ -356,6 +351,7 @@ const CreateTasks: React.FC = () => {
               </div>
             )}
           </div>
+        )}
         </div>
       </div>
       {isModalOpen && <CreaTarea onClose={handleModalClose} mode={modalMode} taskId={selectedTaskId} />}

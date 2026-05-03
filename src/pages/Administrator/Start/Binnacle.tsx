@@ -76,7 +76,7 @@ const Binnacle = () => {
             })),
           )
         } catch (error) {
-          
+
         } finally {
           setIsLoading(false)
         }
@@ -244,7 +244,6 @@ const Binnacle = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900 dark:text-white">{log.username}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">ID: {log.id_user}</p>
                   </div>
                 </div>
 
@@ -329,11 +328,10 @@ const Binnacle = () => {
                 <button
                   key={page}
                   onClick={() => paginate(page)}
-                  className={`h-9 w-9 flex items-center justify-center border-t border-b border-gray-300 dark:border-gray-600 ${
-                    currentPage === page
+                  className={`h-9 w-9 flex items-center justify-center border-t border-b border-gray-300 dark:border-gray-600 ${currentPage === page
                       ? "bg-blue-600 text-white"
                       : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
+                    }`}
                   aria-label={`Página ${page}`}
                   aria-current={currentPage === page ? "page" : undefined}
                 >

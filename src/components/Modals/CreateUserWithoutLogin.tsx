@@ -19,7 +19,7 @@ const CreateUserWithoutLogin: React.FC<CreateUserWithoutLoginProps> = ({ onClose
 
 
 
-      
+
       setEmail(usuario.email || "")
       setName(usuario.name || "")
       setCarnet(usuario.carnet || "")
@@ -84,10 +84,10 @@ const CreateUserWithoutLogin: React.FC<CreateUserWithoutLoginProps> = ({ onClose
             </svg>
           </div>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
-            {usuario ? "Editar Usuario" : "Crear Usuario"}
+            {usuario ? "Editar Estudiante" : "Crear Estudiante"}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            {usuario ? "Actualiza la información del usuario" : "Registra un nuevo usuario en el sistema"}
+            {usuario ? "Actualiza la información del estudiante" : "Registra un nuevo estudiante en el sistema"}
           </p>
         </div>
 
@@ -170,7 +170,7 @@ const CreateUserWithoutLogin: React.FC<CreateUserWithoutLoginProps> = ({ onClose
               ) : usuario ? (
                 "Actualizar"
               ) : (
-                "Crear Usuario"
+                "Crear"
               )}
             </button>
           </div>

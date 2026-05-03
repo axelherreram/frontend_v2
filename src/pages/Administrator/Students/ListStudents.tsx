@@ -9,7 +9,7 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import generaPDFGeneral from "../../../components/Pdfs/generatePDFGeneral"
 import BuscadorEstudiantes from "../../../components/Searches/SearchStudents"
 import TourStudents from "../../../components/Tours/Administrator/TourStudents"
-import { Users, ChevronLeft, ChevronRight, Printer, XCircle } from "lucide-react"
+import { Users, ChevronLeft, ChevronRight, FileSpreadsheet, XCircle } from "lucide-react"
 
 /**
  * Interface for student data
@@ -230,25 +230,7 @@ const ListStudents: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize) // Cleanup event listener
   }, [])
 
-  // If no courses are available, show a message
-  if (cursos.length === 0) {
-    return (
-      <>
-        <Breadcrumb pageName="Listar Estudiantes" />
-        <div className="mx-auto max-w-6xl px-4 py-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl mb-6 flex flex-col items-center justify-center text-center">
-            <XCircle className="h-20 w-20 mb-6 text-red-500" />
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              No existen cursos asignados a esta sede.
-            </p>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              Por favor, comuníquese con central para asignar cursos.
-            </p>
-          </div>
-        </div>
-      </>
-    )
-  }
+
 
   return (
     <>
@@ -265,10 +247,10 @@ const ListStudents: React.FC = () => {
           <div className="flex items-center space-x-3">
             <button
               id="print-report"
-              className="flex items-center px-5 py-2 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="flex items-center px-5 py-2 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-400"
               onClick={() => handlePrintPDF(Number(selectedAño), Number(selectedCurso))}
             >
-              <Printer className="h-5 w-5 mr-2" /> Imprimir Reporte
+              <FileSpreadsheet className="h-5 w-5 mr-2" /> Exportar a Excel
             </button>
             <TourStudents />
           </div>
@@ -303,47 +285,59 @@ const ListStudents: React.FC = () => {
           </select>
         </div>
 
-        <div className="overflow-x-auto rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
-          <table id="student-table" className="min-w-full bg-white dark:bg-gray-800">
-            <thead className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm uppercase tracking-wider">
-              <tr>
-                <th className="py-3 px-4 text-left rounded-tl-xl">Foto</th>
-                <th className="py-3 px-4 text-center">Nombre Estudiante</th>
-                <th className="py-3 px-4 text-center rounded-tr-xl">Carnet</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentEstudiantes.length > 0 ? (
-                currentEstudiantes.map((est) => (
-                  <tr
-                    key={est.id}
-                    onClick={() => handleStudentClick(est)}
-                    className="border-t border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 group"
-                  >
-                    <td className="py-3 px-4 text-center">{renderProfilePhoto(est.fotoPerfil, est.userName)}</td>
-                    <td className="py-3 px-4 text-center text-gray-900 dark:text-white relative">
-                      {est.userName}
-                      <div className="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded-md px-2 py-1 -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap dark:bg-gray-200 dark:text-gray-800 shadow-md">
-                        Ir Hacia TimeLine Estudiante
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-center text-gray-700 dark:text-gray-300">{est.carnet}</td>
-                  </tr>
-                ))
-              ) : (
+        {cursos.length === 0 ? (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700 mb-6 flex flex-col items-center justify-center text-center mt-6">
+            <XCircle className="h-20 w-20 mb-6 text-red-500" />
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              No existen cursos asignados a esta sede.
+            </p>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Por favor, cambie de año o comuníquese con central para asignar cursos.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
+            <table id="student-table" className="min-w-full bg-white dark:bg-gray-800">
+              <thead className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm uppercase tracking-wider">
                 <tr>
-                  <td colSpan={3} className="py-8 text-center text-gray-500 dark:text-gray-400">
-                    <Users className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                    <p className="text-lg font-medium">No se encontraron estudiantes.  </p>
-                  </td>
+                  <th className="py-3 px-4 text-left rounded-tl-xl">Foto</th>
+                  <th className="py-3 px-4 text-center">Nombre Estudiante</th>
+                  <th className="py-3 px-4 text-center rounded-tr-xl">Carnet</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {currentEstudiantes.length > 0 ? (
+                  currentEstudiantes.map((est) => (
+                    <tr
+                      key={est.id}
+                      onClick={() => handleStudentClick(est)}
+                      className="border-t border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 group"
+                    >
+                      <td className="py-3 px-4 text-center">{renderProfilePhoto(est.fotoPerfil, est.userName)}</td>
+                      <td className="py-3 px-4 text-center text-gray-900 dark:text-white relative">
+                        {est.userName}
+                        <div className="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded-md px-2 py-1 -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap dark:bg-gray-200 dark:text-gray-800 shadow-md">
+                          Ir Hacia TimeLine Estudiante
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-center text-gray-700 dark:text-gray-300">{est.carnet}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="py-8 text-center text-gray-500 dark:text-gray-400">
+                      <Users className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                      <p className="text-lg font-medium">No se encontraron estudiantes.  </p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Pagination */}
-        {totalPages > 1 && (
+        {cursos.length > 0 && totalPages > 1 && (
           <div id="pagination" className="mt-8 flex justify-center items-center space-x-2">
             <button
               onClick={() => paginate(currentPage - 1)}

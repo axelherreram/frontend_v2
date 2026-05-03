@@ -68,11 +68,11 @@ const TasksStudent: React.FC = () => {
     }
 
     if (task.typeTask_id === 1) {
-      navigate("/coordinadorgeneral/propuestas", {
+      navigate("/administrador/propuestas", {
         state: { tarea: task, estudiante, selectedAño },
       })
     } else {
-      navigate("/coordinadorgeneral/capitulo", {
+      navigate("/administrador/capitulo", {
         state: { tarea: task, estudiante, selectedAño, selectedCurso },
       })
     }

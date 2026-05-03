@@ -116,11 +116,15 @@ const CourseInfo: React.FC = () => {
   }
 
   /**
-   * Check if the submit button should be disabled based on task deadline
+   * Check if the current time is outside the task date range
    */
-  const isButtonDisabled = (endTask: string, endTime: string | undefined): boolean => {
+  const isDateOutOfRange = (
+    taskStart: string,
+    startTime: string | undefined,
+    endTask: string,
+    endTime: string | undefined
+  ): boolean => {
     const currentDate = new Date()
-    const endDate = new Date(endTask)
     const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())
     const currentHour = currentDate.getHours()
     const currentMinutes = currentDate.getMinutes()
@@ -129,11 +133,17 @@ const CourseInfo: React.FC = () => {
     const formattedCurrentTime = `${currentHour.toString().padStart(2, "0")}:${currentMinutes.toString().padStart(2, "0")}:${currentSeconds.toString().padStart(2, "0")}`
     const formattedCurrentDateTime = `${currentDateOnly.toISOString().split("T")[0]} ${formattedCurrentTime}`
 
-    const endDateOnly = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate()))
-    const formattedEndDateTime = `${endDateOnly.toISOString().split("T")[0]} ${endTime || ""}`
+    const startDate = new Date(taskStart)
+    const startDateOnly = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate()))
+    const formattedStartDateTime = `${startDateOnly.toISOString().split("T")[0]} ${startTime || "00:00:00"}`
 
-    if (isNaN(endDateOnly.getTime())) return true
-    return formattedCurrentDateTime > formattedEndDateTime
+    const endDate = new Date(endTask)
+    const endDateOnly = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate()))
+    const formattedEndDateTime = `${endDateOnly.toISOString().split("T")[0]} ${endTime || "23:59:59"}`
+
+    if (isNaN(endDateOnly.getTime()) || isNaN(startDateOnly.getTime())) return true
+    
+    return formattedCurrentDateTime < formattedStartDateTime || formattedCurrentDateTime > formattedEndDateTime
   }
 
   /**
@@ -271,8 +281,8 @@ const CourseInfo: React.FC = () => {
                   <div className="flex flex-col sm:flex-row gap-4 mt-4">
                     <button
                       onClick={openModal}
-                      disabled={isButtonDisabled(currentTarea.endTask, currentTarea.endTime)}
-                      className={`px-6 py-3 rounded-xl font-semibold text-white flex items-center justify-center shadow-md ${isButtonDisabled(currentTarea.endTask, currentTarea.endTime)
+                      disabled={currentTarea.submission_complete || isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)}
+                      className={`px-6 py-3 rounded-xl font-semibold text-white flex items-center justify-center shadow-md ${currentTarea.submission_complete || isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-blue-600 hover:bg-purple-700"
                         }`}
@@ -290,8 +300,8 @@ const CourseInfo: React.FC = () => {
                           currentTarea.endTime,
                         )
                       }
-                      disabled={isButtonDisabled(currentTarea.endTask, currentTarea.endTime)}
-                      className={`px-6 py-3 rounded-xl font-semibold flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isButtonDisabled(currentTarea.endTask, currentTarea.endTime)
+                      disabled={isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)}
+                      className={`px-6 py-3 rounded-xl font-semibold flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)
                         ? "bg-gray-400 text-white cursor-not-allowed focus:ring-gray-500"
                         : "bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500"
                         }`}
@@ -305,8 +315,8 @@ const CourseInfo: React.FC = () => {
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   {currentTarea.submission_complete
                     ? "Esta tarea ya ha sido entregada."
-                    : isButtonDisabled(currentTarea.endTask, currentTarea.endTime)
-                      ? "El plazo de entrega ha finalizado."
+                    : isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)
+                      ? "La tarea no está en el rango de fechas permitido."
                       : "Entrega la tarea antes de la fecha límite."}
                 </span>
               </div>

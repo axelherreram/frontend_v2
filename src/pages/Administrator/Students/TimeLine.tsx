@@ -139,17 +139,18 @@ const TimeLine: React.FC = () => {
         </button>
       </div>
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl">
-          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-2 md:mb-0 flex items-center">
-            <Users className="h-7 w-7 mr-3 text-blue-600" /> Línea de Tiempo - {studentName}
+        <div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-4 mb-8 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl">
+          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white flex items-center text-center md:text-left w-full md:w-auto justify-center md:justify-start">
+            <Users className="h-7 w-7 mr-3 text-blue-600 flex-shrink-0" />
+            <span className="break-words">Línea de Tiempo - {studentName}</span>
           </h2>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 flex-shrink-0 w-full sm:w-auto justify-center">
             <button
               id="print-report"
               onClick={handlePrintPDF}
-              className="flex items-center px-6 py-2 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="flex items-center justify-center px-6 py-2 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 whitespace-nowrap"
             >
-              <Printer className="h-5 w-5 mr-2" /> Imprimir Reporte
+              <Printer className="h-5 w-5 mr-2 flex-shrink-0" /> Imprimir Reporte
             </button>
             <button
               id="view-tasks"
@@ -158,9 +159,9 @@ const TimeLine: React.FC = () => {
                   state: { estudiante, selectedAño, selectedCurso },
                 })
               }}
-              className="flex items-center px-6 py-2 bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="flex items-center justify-center px-6 py-2 bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 whitespace-nowrap"
             >
-              <FileText className="h-5 w-5 mr-2" /> Ver Tareas
+              <FileText className="h-5 w-5 mr-2 flex-shrink-0" /> Ver Tareas
             </button>
           </div>
         </div>

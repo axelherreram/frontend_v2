@@ -115,22 +115,22 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, mode, taskId }) => {
       return
     }
 
-    if (new Date(endTask) <= new Date(taskStart)) {
+    if (new Date(endTask) < new Date(taskStart)) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "La Fecha Final debe ser mayor a la Fecha Inicial.",
+        text: "La Fecha Final no puede ser anterior a la Fecha Inicial.",
         confirmButtonColor: "#ef4444",
         confirmButtonText: "De Acuerdo",
       })
       return
     }
 
-    if (startTime >= endTime) {
+    if (taskStart === endTask && startTime >= endTime) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "La Hora Final debe ser mayor a la Fecha Inicial.",
+        text: "La Hora Final debe ser mayor a la Hora Inicial cuando es el mismo día.",
         confirmButtonColor: "#ef4444",
         confirmButtonText: "De Acuerdo",
       })

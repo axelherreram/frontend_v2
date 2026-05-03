@@ -7,6 +7,7 @@ import umgLogo from "../../images/Login/logo3.png"
 import ofiLogo from "../../images/Login/sistemas1_11zon.png"
 import axios from "axios"
 import { useSedes } from "../../components/ReloadPages/HeadquarterSelectContext"
+import { useProfile } from "../../context/UserProfileContext"
 
 const Login: React.FC = () => {
   const navigate = useNavigate()
@@ -14,6 +15,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { reloadSedes } = useSedes()
+  const { reloadProfile } = useProfile()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -54,9 +56,12 @@ const Login: React.FC = () => {
 
     setIsLoading(true)
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password })
+      const response = await axios.post(`${import.meta.env.VITE_AUTH_URL}/login`, { email, password })
       localStorage.setItem("authToken", response.data.token)
       localStorage.setItem("userRole", response.data.rol)
+
+      // Actualizamos el estado global del perfil inmediatamente
+      await reloadProfile()
 
       const rolePaths: { [key: number]: string } = {
         7: "/revisortesis/mis-asignaciones",

@@ -7,7 +7,7 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import generaPDFGeneral from "../../../components/Pdfs/GeneralCoordinator/generatePDFGeneral"
 import BuscadorEstudiantes from "../../../components/Searches/SearchStudents"
 import TourStudents from "../../../components/Tours/Administrator/TourStudents"
-import { Users, ChevronLeft, ChevronRight, Printer } from "lucide-react"
+import { Users, ChevronLeft, ChevronRight, FileSpreadsheet } from "lucide-react"
 import { useSede } from "../../../components/ReloadPages/HeadquarterPagesContext"
 
 interface Estudiante {
@@ -177,10 +177,10 @@ const ListStudents: React.FC = () => {
           <div className="flex items-center space-x-3">
             <button
               id="print-report"
-              className="flex items-center px-5 py-2 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="flex items-center px-5 py-2 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-400"
               onClick={() => handlePrintPDF(Number(selectedAño), Number(selectedCurso))}
             >
-              <Printer className="h-5 w-5 mr-2" /> Imprimir Reporte
+              <FileSpreadsheet className="h-5 w-5 mr-2" /> Exportar a Excel
             </button>
             <TourStudents />
           </div>

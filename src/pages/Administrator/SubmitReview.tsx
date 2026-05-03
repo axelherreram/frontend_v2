@@ -44,6 +44,52 @@ const SubmitReview: React.FC = () => {
     }
   }
 
+  /**
+   * Submits the review to the backend API
+   */
+  const handleSubmit = async () => {
+    if (!studentId || !approvedThesis || !approvalLetter || !campusId) {
+      Swal.fire({
+        icon: "error",
+        title: "Campos incompletos",
+        text: "Por favor, ingresa el carnet y selecciona ambos archivos.",
+        confirmButtonColor: "#ef4444",
+      })
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await enviaRevision({
+        carnet: studentId,
+        sede_id: campusId,
+        thesis: approvedThesis,
+        approval_letter: approvalLetter,
+      })
+
+      Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: response.message || "Revisión enviada correctamente.",
+        confirmButtonColor: "#10b981",
+      })
+
+      // Reset form
+      setStudentId("")
+      setApprovedThesis(null)
+      setApprovalLetter(null)
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Error al enviar",
+        text: error.message || "Ocurrió un problema al enviar la revisión.",
+        confirmButtonColor: "#ef4444",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // campusId is derived from profile context — no useEffect needed
 
   return (
@@ -56,7 +102,7 @@ const SubmitReview: React.FC = () => {
             onClick={() => setIsModalOpen(true)}
             className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Crear Usuario
+            Crear Estudiante
           </button>
         </div>
 
@@ -145,8 +191,8 @@ const SubmitReview: React.FC = () => {
             onClick={handleSubmit}
             disabled={loading || !studentId || !approvedThesis || !approvalLetter || campusId === null}
             className={`px-8 py-3 w-full flex justify-center items-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 font-semibold text-white shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 ${loading || !studentId || !approvedThesis || !approvalLetter || campusId === null
-                ? "opacity-50 cursor-not-allowed"
-                : ""
+              ? "opacity-50 cursor-not-allowed"
+              : ""
               }`}
           >
             {loading ? (

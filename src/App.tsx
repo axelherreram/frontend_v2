@@ -107,7 +107,7 @@ function App() {
           <>
             <Route path="time-line" element={<Start />} />
             <Route path="propuestas" element={<Proposal />} />
-            <Route path="cursos" element={<Courses />} />
+            <Route path="courses" element={<Courses />} />
             <Route path="info-curso" element={<CourseInfo />} />
             <Route path="info-capitulo" element={<ChapterInfo />} />
           </>
@@ -131,7 +131,7 @@ function App() {
             <Route path="propuestas" element={<Proposals />} />
             <Route path="capitulo" element={<Chapters />} />
             <Route path="crear-tareas" element={<CreateTasks />} />
-            <Route path="enviar-revisión" element={<SubmitReview />} />
+            <Route path="enviar-revision" element={<SubmitReview />} />
           </>
         )}
 
