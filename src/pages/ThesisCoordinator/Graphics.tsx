@@ -4,12 +4,17 @@ import { getTotalesRevision } from "../../ts/ThesisCoordinatorandReviewer/Totals
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.tsx"
 import CardDataStats from "../../components/Cards/CardDataStats.tsx"
 import GraficaPorSede from "../../components/Graphics/ThesisCoordinator/TotalReviewsPerHeadquarters.tsx"
-import { List, CheckCircle, XCircle, AlertCircle } from "lucide-react" // Import Lucide icons
+import { List, CheckCircle, XCircle, AlertCircle, CalendarDays } from "lucide-react"
+import { useYears } from "../../context/YearsContext"
 
 /**
  * Component for displaying thesis review statistics and charts
  */
 const Graphics: React.FC = () => {
+  const { years } = useYears()
+  const currentYear = new Date().getFullYear()
+  const activeYear = years.find((y) => y.year === currentYear)?.year || currentYear
+
   // State for storing review statistics
   const [totales, setTotales] = useState({
     totalRevisions: 0,
@@ -19,6 +24,7 @@ const Graphics: React.FC = () => {
     totalRevisores: 0,
   })
   const [loading, setLoading] = useState<boolean>(true)
+
   /**
    * Fetch review statistics data when component mounts
    */
@@ -28,23 +34,27 @@ const Graphics: React.FC = () => {
         const data = await getTotalesRevision()
         setTotales(data.data)
       } catch (error) {
-
+        console.error("Error cargando las estadísticas:", error)
       } finally {
         setLoading(false)
       }
     }
     fetchData()
   }, [])
+
   return (
     <>
-      <Breadcrumb pageName="Graficas" />
-      <div className="mx-auto max-w-6xl px-4 py-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+      <Breadcrumb pageName="Métricas Globales" />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-8">
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 2xl:gap-7.5">
           {loading ? (
-            <div className="flex justify-center items-center col-span-full min-h-64">
+            <div className="flex justify-center items-center col-span-full min-h-[200px]">
               <div className="text-center">
-                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-gray-600 dark:text-gray-400">Cargando datos...</p>
+                <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-400 font-medium">Cargando métricas...</p>
               </div>
             </div>
           ) : (
@@ -55,7 +65,7 @@ const Graphics: React.FC = () => {
                 rate=""
                 levelDown={false}
               >
-                <List className="h-12 w-12 text-blue-500 dark:text-blue-300" />
+                <List className="w-6 h-6" />
               </CardDataStats>
               <CardDataStats
                 title="Revisiones Aprobadas"
@@ -63,7 +73,7 @@ const Graphics: React.FC = () => {
                 rate=""
                 levelDown={false}
               >
-                <CheckCircle className="h-12 w-12 text-green-500 dark:text-green-300" />
+                <CheckCircle className="w-6 h-6" />
               </CardDataStats>
               <CardDataStats
                 title="Revisiones Rechazadas"
@@ -71,7 +81,7 @@ const Graphics: React.FC = () => {
                 rate=""
                 levelDown={false}
               >
-                <XCircle className="h-12 w-12 text-red-500 dark:text-red-300" />
+                <XCircle className="w-6 h-6" />
               </CardDataStats>
               <CardDataStats
                 title="Revisiones Activas"
@@ -79,15 +89,17 @@ const Graphics: React.FC = () => {
                 rate=""
                 levelDown={false}
               >
-                <AlertCircle className="h-12 w-12 text-yellow-500 dark:text-yellow-300" />
+                <AlertCircle className="w-6 h-6" />
               </CardDataStats>
             </>
           )}
         </div>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
+
+        {/* Chart Section */}
+        <div className="mt-8 bg-white dark:bg-boxdark rounded-[2rem] border border-gray-100 dark:border-strokedark shadow-sm overflow-hidden p-6 transition-colors duration-300">
           <GraficaPorSede />
         </div>
-      </div>
+      </div >
     </>
   )
 }

@@ -35,12 +35,13 @@ interface ThesisRevisionInfo {
     carnet: string;
     email: string;
     profilePhoto: string | null;
+    profilePhoto: string | null;
     location: {
       nameSede: string;
-    };
+    } | null;
     year: {
       year: number;
-    };
+    } | null;
   };
 }
 
@@ -81,16 +82,16 @@ export const getComentariosRevision = async (user_id: number): Promise<ThesisRev
           approved: approval.approved,
         })),
         user: {
-          name: revision.user.name,                    // Use lowercase 'user' from backend
-          carnet: revision.user.carnet,
-          email: revision.user.email,
-          profilePhoto: revision.user.profilePhoto,
-          location: {
-            nameSede: revision.user.location.nameSede,
-          },
-          year: {
-            year: revision.user.year.year,
-          },
+          name: revision.user?.name ?? 'Sin nombre',
+          carnet: revision.user?.carnet ?? 'Sin carnet',
+          email: revision.user?.email ?? 'Sin correo',
+          profilePhoto: revision.user?.profilePhoto ?? null,
+          location: revision.user?.location 
+            ? { nameSede: revision.user.location.nameSede } 
+            : null,
+          year: revision.user?.year 
+            ? { year: revision.user.year.year } 
+            : null,
         },
       }));
     }

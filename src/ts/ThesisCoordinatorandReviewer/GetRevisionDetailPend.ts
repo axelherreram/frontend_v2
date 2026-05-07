@@ -13,10 +13,10 @@ interface RevisionDetalle {
     profilePhoto: string | null;
     location: {
       nameSede: string;
-    };
+    } | null;
     year: {
       year: number;
-    };
+    } | null;
   };
   assignedReviews: any[];
   assigned_reviewer: any | null;
@@ -50,19 +50,20 @@ export const getRevisionDetallePendi = async (user_id: number): Promise<Revision
         date_revision: revision.date_revision,
         active_process: revision.active_process,
         user: {
-          name: revision.user.name,                    // Use lowercase 'user' from backend
-          carnet: revision.user.carnet,
-          email: revision.user.email,
-          profilePhoto: revision.user.profilePhoto,
-          location: {
-            nameSede: revision.user.location.nameSede,
-          },
-          year: {
-            year: revision.user.year.year,
-          },
+          name: revision.user?.name ?? 'Sin nombre',
+          carnet: revision.user?.carnet ?? 'Sin carnet',
+          email: revision.user?.email ?? 'Sin correo',
+          profilePhoto: revision.user?.profilePhoto ?? null,
+          location: revision.user?.location
+            ? { nameSede: revision.user.location.nameSede }
+            : null,
+          // year puede ser null si el estudiante no tiene año asignado
+          year: revision.user?.year
+            ? { year: revision.user.year.year }
+            : null,
         },
-        assignedReviews: revision.AssignedReviews,
-        assigned_reviewer: revision.assigned_reviewer,
+        assignedReviews: revision.AssignedReviews ?? [],
+        assigned_reviewer: revision.assigned_reviewer ?? null,
       }));
     }
 
@@ -77,3 +78,5 @@ export const getRevisionDetallePendi = async (user_id: number): Promise<Revision
     throw new Error('Error desconocido');
   }
 };
+
+

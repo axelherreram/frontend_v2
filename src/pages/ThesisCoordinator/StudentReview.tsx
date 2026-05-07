@@ -126,10 +126,12 @@ const StudentReview: React.FC = () => {
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Datos de la Sede</h3>
                     <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                       <p className="text-gray-700 dark:text-gray-300">
-                        <span className="font-medium">Año:</span> {revision.user.year.year}
+                        <span className="font-medium">Año:</span>{" "}
+                        {revision.user.year?.year ?? "Sin año asignado"}
                       </p>
                       <p className="text-gray-700 dark:text-gray-300">
-                        <span className="font-medium">Sede:</span> {revision.user.location.nameSede}
+                        <span className="font-medium">Sede:</span>{" "}
+                        {revision.user.location?.nameSede ?? "Sin sede"}
                       </p>
                     </div>
                   </div>

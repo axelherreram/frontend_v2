@@ -102,7 +102,9 @@ const MyAssignments: React.FC = () => {
    * Navigate to review details page
    */
   const handleVerDetalle = (userId: number) => {
-    navigate(`/coordinadortesis/mis-asignaciones/detalle-comentario`, { state: { userId } })
+    const userRole = localStorage.getItem('userRole')
+    const basePath = userRole === '6' ? '/coordinadortesis' : '/revisortesis'
+    navigate(`${basePath}/mis-asignaciones/detalle-comentario`, { state: { userId } })
   }
 
   /**
