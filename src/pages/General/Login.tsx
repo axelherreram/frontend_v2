@@ -8,6 +8,7 @@ import ofiLogo from "../../images/Login/sistemas1_11zon.png"
 import axios from "axios"
 import { useSedes } from "../../components/ReloadPages/HeadquarterSelectContext"
 import { useProfile } from "../../context/UserProfileContext"
+import { useYears } from "../../context/YearsContext"
 
 const Login: React.FC = () => {
   const navigate = useNavigate()
@@ -16,6 +17,7 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const { reloadSedes } = useSedes()
   const { reloadProfile } = useProfile()
+  const { reloadYears } = useYears()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -60,8 +62,11 @@ const Login: React.FC = () => {
       localStorage.setItem("authToken", response.data.token)
       localStorage.setItem("userRole", response.data.rol)
 
-      // Actualizamos el estado global del perfil inmediatamente
-      await reloadProfile()
+      // Actualizamos el estado global del perfil y años inmediatamente
+      await Promise.all([
+        reloadProfile(),
+        reloadYears()
+      ]);
 
       const rolePaths: { [key: number]: string } = {
         7: "/revisortesis/mis-asignaciones",
@@ -87,19 +92,11 @@ const Login: React.FC = () => {
           await reloadSedes()
         }
 
-        Swal.fire({
-          icon: "success",
-          title: "¡Bienvenido!",
-          text: "Inicio de sesión exitoso.",
-          confirmButtonColor: "#10b981",
-          confirmButtonText: "De Acuerdo",
-        }).then(() => {
-          const validRoles = [1, 3, 4, 5, 6, 7]
-          const rolePath = validRoles.includes(response.data.rol)
-            ? rolePaths[response.data.rol]
-            : "/"
-          navigate(rolePath)
-        })
+        const validRoles = [1, 3, 4, 5, 6, 7]
+        const rolePath = validRoles.includes(response.data.rol)
+          ? rolePaths[response.data.rol]
+          : "/"
+        navigate(rolePath)
       }
     } catch (error: any) {
       Swal.fire({
