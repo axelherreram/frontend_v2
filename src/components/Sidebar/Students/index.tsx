@@ -15,10 +15,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { to: '/estudiantes/time-line',  label: 'Inicio',      icon: <Home size={20} /> },
-  { to: '/estudiantes/propuestas', label: 'Propuestas',  icon: <FileText size={20} /> },
-  { to: '/estudiantes/courses',    label: 'Cursos',      icon: <BookOpen size={20} /> },
-  { to: '/estudiantes/calendario', label: 'Calendario',  icon: <Calendar size={20} /> },
+  { to: '/estudiantes/time-line', label: 'Inicio', icon: <Home size={20} /> },
+  { to: '/estudiantes/propuestas', label: 'Propuestas', icon: <FileText size={20} /> },
+  { to: '/estudiantes/courses', label: 'Cursos', icon: <BookOpen size={20} /> },
+  { to: '/estudiantes/calendario', label: 'Calendario', icon: <Calendar size={20} /> },
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
@@ -60,7 +60,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
         <NavLink to="/estudiantes/time-line" className="flex items-center gap-3">
-          <img src={Logo} alt="Logo" className="h-9 w-auto" />
+          <img src={Logo} alt="Logo" className="h-19 w-auto" />
         </NavLink>
         <button
           ref={trigger}

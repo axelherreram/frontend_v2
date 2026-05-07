@@ -15,12 +15,12 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { to: '/coordinadortesis/graficas',             label: 'Inicio',                  icon: <Home size={20} /> },
-  { to: '/coordinadortesis/mis-asignaciones',     label: 'Mis Asignaciones',        icon: <ClipboardList size={20} /> },
+  { to: '/coordinadortesis/graficas', label: 'Inicio', icon: <Home size={20} /> },
+  { to: '/coordinadortesis/mis-asignaciones', label: 'Mis Asignaciones', icon: <ClipboardList size={20} /> },
   { to: '/coordinadortesis/solicitud-revisiones', label: 'Solicitudes de Revisión', icon: <Send size={20} /> },
-  { to: '/coordinadortesis/asignaciones',         label: 'Asignaciones',            icon: <ClipboardList size={20} /> },
-  { to: '/coordinadortesis/revisores',            label: 'Revisores',               icon: <Users size={20} /> },
-  { to: '/coordinadortesis/historial',            label: 'Historial',               icon: <History size={20} /> },
+  { to: '/coordinadortesis/asignaciones', label: 'Asignaciones', icon: <ClipboardList size={20} /> },
+  { to: '/coordinadortesis/revisores', label: 'Revisores', icon: <Users size={20} /> },
+  { to: '/coordinadortesis/historial', label: 'Historial', icon: <History size={20} /> },
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
@@ -59,7 +59,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
         <NavLink to="/coordinadortesis/graficas" className="flex items-center gap-3">
-          <img src={Logo} alt="Logo" className="h-9 w-auto" />
+          <img src={Logo} alt="Logo" className="h-19 w-auto" />
         </NavLink>
         <button
           ref={trigger}

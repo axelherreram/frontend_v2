@@ -58,7 +58,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
         <NavLink to="/coordinadorsede/graficas" className="flex items-center gap-3">
-          <img src={Logo} alt="Logo" className="h-9 w-auto" />
+          <img src={Logo} alt="Logo" className="h-19 w-auto" />
         </NavLink>
         <button
           ref={trigger}

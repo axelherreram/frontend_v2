@@ -231,7 +231,7 @@ const InfoChapter: React.FC = () => {
             {(isButtonDisabled() || isComentarioBloqueado) && (
               <div className="text-red-500 text-sm font-medium">
                 {isButtonDisabled() && <p>Tarea llegó a fecha límite.</p>}
-                {isComentarioBloqueado && <p>Admin ha bloqueado los comentarios.</p>}
+                {isComentarioBloqueado && <p>Comentarios bloqueados.</p>}
               </div>
             )}
             <button

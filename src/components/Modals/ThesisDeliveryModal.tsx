@@ -9,6 +9,7 @@ interface ThesisDeliveryModalProps {
   onClose: () => void;
   taskId: number;
   taskTitle: string;
+  hasPreviousSubmission?: boolean;
 }
 
 const ThesisDeliveryModal: React.FC<ThesisDeliveryModalProps> = ({
@@ -16,6 +17,7 @@ const ThesisDeliveryModal: React.FC<ThesisDeliveryModalProps> = ({
   onClose,
   taskId,
   taskTitle,
+  hasPreviousSubmission = false,
 }) => {
   const { profile } = useProfile();
   const userId = profile?.user_id ?? null;
@@ -96,8 +98,18 @@ const ThesisDeliveryModal: React.FC<ThesisDeliveryModalProps> = ({
 
         {/* Título */}
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-          Entregar - {taskTitle}
+          {hasPreviousSubmission ? `Actualizar - ${taskTitle}` : `Entregar - ${taskTitle}`}
         </h2>
+
+        {/* Advertencia si ya entregó */}
+        {hasPreviousSubmission && (
+          <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg flex items-start gap-3">
+            <span className="text-amber-600 dark:text-amber-400 mt-0.5">⚠️</span>
+            <p className="text-sm text-amber-800 dark:text-amber-300">
+              <strong>Atención:</strong> Ya has subido un documento para esta tarea. Si subes uno nuevo, <strong>el documento anterior se borrará</strong> y será reemplazado por el nuevo.
+            </p>
+          </div>
+        )}
 
         {/* Subida de PDF */}
         <div className="mb-6">
@@ -142,25 +154,27 @@ const ThesisDeliveryModal: React.FC<ThesisDeliveryModalProps> = ({
           </div>
         </div>
 
-        {/* Botón enviar */}
-        <div className="flex justify-center">
-          <button
-            onClick={handleSubmit}
-            disabled={loading || !pdfFile || !userId}
-            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700
-                       text-white font-medium rounded-xl transition-all duration-200
-                       disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                       shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin h-5 w-5 mr-3" /> Enviando...
-              </>
-            ) : (
-              "Entregar Capitulo"
-            )}
-          </button>
-        </div>
+        {/* Botón Guardar */}
+        <button
+          onClick={handleSubmit}
+          disabled={loading || !pdfFile}
+          className={`w-full py-3 px-4 rounded-xl font-semibold text-white flex items-center justify-center transition-all duration-300
+            ${loading || !pdfFile
+              ? "bg-gray-400 cursor-not-allowed dark:bg-gray-600"
+              : hasPreviousSubmission 
+                ? "bg-amber-500 hover:bg-amber-600 shadow-md hover:shadow-lg"
+                : "bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg"
+            }`}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin h-5 w-5 mr-2" />
+              Subiendo archivo...
+            </>
+          ) : (
+            hasPreviousSubmission ? "Reemplazar Documento" : "Subir Documento"
+          )}
+        </button>
       </div>
     </div>
   );

@@ -15,13 +15,13 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { to: '/coordinadorgeneral/graficas',                label: 'Gráficas',           icon: <BarChart2 size={20} /> },
-  { to: '/coordinadorgeneral/crear-sedes',             label: 'Crear Sedes',        icon: <Building2 size={20} /> },
-  { to: '/coordinadorgeneral/crear-coordinador-sede',  label: 'Coordinador Sede',   icon: <UserCheck size={20} /> },
-  { to: '/coordinadorgeneral/crear-coordinador-tesis', label: 'Coordinador Tesis',  icon: <UserCog size={20} /> },
-  { to: '/coordinadorgeneral/listado-estudiantes',     label: 'Estudiantes',        icon: <Users size={20} /> },
-  { to: '/coordinadorgeneral/ver-tareas',              label: 'Tareas',             icon: <ClipboardList size={20} /> },
-  { to: '/coordinadorgeneral/historial',               label: 'Historial',          icon: <History size={20} /> },
+  { to: '/coordinadorgeneral/graficas', label: 'Gráficas', icon: <BarChart2 size={20} /> },
+  { to: '/coordinadorgeneral/crear-sedes', label: 'Crear Sedes', icon: <Building2 size={20} /> },
+  { to: '/coordinadorgeneral/crear-coordinador-sede', label: 'Coordinador Sede', icon: <UserCheck size={20} /> },
+  { to: '/coordinadorgeneral/crear-coordinador-tesis', label: 'Coordinador Tesis', icon: <UserCog size={20} /> },
+  { to: '/coordinadorgeneral/listado-estudiantes', label: 'Estudiantes', icon: <Users size={20} /> },
+  { to: '/coordinadorgeneral/ver-tareas', label: 'Tareas', icon: <ClipboardList size={20} /> },
+  { to: '/coordinadorgeneral/historial', label: 'Historial', icon: <History size={20} /> },
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
@@ -60,7 +60,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
         <NavLink to="/coordinadorgeneral/graficas" className="flex items-center gap-3">
-          <img src={Logo} alt="Logo" className="h-9 w-auto" />
+          <img src={Logo} alt="Logo" className="h-19 w-auto" />
         </NavLink>
         <button
           ref={trigger}

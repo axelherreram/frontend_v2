@@ -3,8 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useProfile } from "../../context/UserProfileContext"
 import { getTareas } from "../../ts/General/GetTasks"
 import { getTareasEstudiante } from "../../ts/Students/GetTasksStudent"
+import { getComentarios } from "../../ts/General/GetComment"
 import ThesisDeliveryModal from "../../components/Modals/ThesisDeliveryModal"
-import { Calendar, Clock, ArrowLeft, ArrowRight, MessageSquare, CheckCircle, XCircle } from "lucide-react"
+import { Calendar, Clock, ArrowLeft, ArrowRight, MessageSquare, CheckCircle, XCircle, Lock } from "lucide-react"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
 import Swal from "sweetalert2"
 import type React from "react"
@@ -23,6 +24,7 @@ const CourseInfo: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalTaskId, setModalTaskId] = useState<number | null>(null)
   const [modalTaskTitle, setModalTaskTitle] = useState<string>("")
+  const [isCommentsBlocked, setIsCommentsBlocked] = useState(false)
 
 
   /**
@@ -67,6 +69,26 @@ const CourseInfo: React.FC = () => {
       fetchTareas()
     }
   }, [courseId])
+
+  /**
+   * Check if comments are blocked for the current task.
+   * Runs whenever the active task changes.
+   */
+  useEffect(() => {
+    const checkCommentsBlocked = async () => {
+      if (!profile || !tareas.length) return
+      const tarea = tareas[currentTaskIndex]
+      if (!tarea?.task_id) return
+      try {
+        const data = await getComentarios(tarea.task_id, profile.user_id)
+        const blocked = data.comments.length > 0 && data.comments[0].comment_active === false
+        setIsCommentsBlocked(blocked)
+      } catch {
+        setIsCommentsBlocked(false)
+      }
+    }
+    checkCommentsBlocked()
+  }, [currentTaskIndex, tareas, profile])
 
   /**
    * Format date to DD/MM/YYYY
@@ -281,13 +303,23 @@ const CourseInfo: React.FC = () => {
                   <div className="flex flex-col sm:flex-row gap-4 mt-4">
                     <button
                       onClick={openModal}
-                      disabled={currentTarea.submission_complete || isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)}
-                      className={`px-6 py-3 rounded-xl font-semibold text-white flex items-center justify-center shadow-md ${currentTarea.submission_complete || isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-purple-700"
-                        }`}
+                      disabled={
+                        isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime) ||
+                        (currentTarea.submission_complete && isCommentsBlocked)
+                      }
+                      className={`px-6 py-3 rounded-xl font-semibold text-white flex items-center justify-center shadow-md ${
+                        isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime) ||
+                        (currentTarea.submission_complete && isCommentsBlocked)
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : currentTarea.submission_complete
+                            ? "bg-amber-500 hover:bg-amber-600"
+                            : "bg-blue-600 hover:bg-purple-700"
+                      }`}
                     >
-                      <CheckCircle className="mr-2 h-5 w-5" /> Entregar Capitulo
+                      {currentTarea.submission_complete && isCommentsBlocked
+                        ? <><Lock className="mr-2 h-5 w-5" /> Entrega Bloqueada</>
+                        : <><CheckCircle className="mr-2 h-5 w-5" /> {currentTarea.submission_complete ? "Actualizar Entrega" : "Entregar Capítulo"}</>
+                      }
                     </button>
 
                     <button
@@ -313,11 +345,13 @@ const CourseInfo: React.FC = () => {
               </div>
               <div className="flex justify-between items-center mt-4">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {currentTarea.submission_complete
-                    ? "Esta tarea ya ha sido entregada."
-                    : isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)
-                      ? "La tarea no está en el rango de fechas permitido."
-                      : "Entrega la tarea antes de la fecha límite."}
+                  {isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)
+                    ? "La tarea no está en el rango de fechas permitido."
+                    : currentTarea.submission_complete && isCommentsBlocked
+                      ? "El administrador ha bloqueado la revisión. No puedes actualizar esta entrega."
+                      : currentTarea.submission_complete
+                        ? "Ya realizaste una entrega. Puedes actualizarla antes de la fecha límite."
+                        : "Entrega la tarea antes de la fecha límite."}
                 </span>
               </div>
             </div>
@@ -335,12 +369,13 @@ const CourseInfo: React.FC = () => {
         </div>
       </div>
       {/* Aquí se incluye el modal */}
-      {modalTaskId !== null && (
+      {modalTaskId !== null && currentTarea && (
         <ThesisDeliveryModal
           isOpen={isModalOpen}
           onClose={closeModal}
           taskId={modalTaskId}
           taskTitle={modalTaskTitle}
+          hasPreviousSubmission={currentTarea.submission_complete}
         />
       )}
     </>
