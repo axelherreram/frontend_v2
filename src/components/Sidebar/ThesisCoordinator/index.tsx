@@ -51,39 +51,39 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     <aside
       ref={sidebar}
       className={`absolute left-0 top-0 z-9999 flex h-screen w-72 flex-col overflow-hidden
-        bg-gradient-to-b from-[#1a1a2e] to-[#16213e]
+        bg-[#1C2434]
         duration-300 ease-linear lg:static lg:translate-x-0
-        shadow-2xl border-r border-white/5
+        border-r border-strokedark
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
+      <div className="flex items-center justify-between px-6 py-5.5 lg:py-6.5 border-b border-strokedark">
         <NavLink to="/coordinadortesis/graficas" className="flex items-center gap-3">
           <img src={Logo} alt="Logo" className="h-19 w-auto" />
         </NavLink>
         <button
           ref={trigger}
           onClick={() => setSidebarOpen(false)}
-          className="lg:hidden p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all"
+          className="lg:hidden p-1.5 rounded-lg text-bodydark hover:text-white transition-all"
         >
           <X size={20} />
         </button>
       </div>
 
       {/* Role badge */}
-      <div className="px-5 py-3">
+      <div className="px-6 py-3">
         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-          bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 tracking-wide uppercase">
+          bg-[#3C50E0]/20 text-[#818CF8] border border-[#3C50E0]/30 tracking-wide uppercase">
           Coordinador de Tesis
         </span>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-2 no-scrollbar">
-        <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-white/30">
+      <nav className="flex-1 overflow-y-auto px-4 py-2 no-scrollbar">
+        <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-bodydark2">
           Menú Principal
         </p>
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-col gap-1.5">
           {navItems.map(({ to, label, icon }) => {
             const isActive = location.pathname === to;
             return (
@@ -91,18 +91,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <NavLink
                   to={to}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
+                  className={`flex items-center gap-3.5 px-4 py-3 rounded-sm text-sm font-medium
                     transition-all duration-200 group
                     ${isActive
-                      ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-500/25'
-                      : 'text-white/60 hover:text-white hover:bg-white/8'}`}
+                      ? 'bg-[#3C50E0] text-white'
+                      : 'text-bodydark1 hover:bg-[#333A48]'}`}
                 >
-                  <span className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-110
-                    ${isActive ? 'text-white' : 'text-indigo-400/70 group-hover:text-indigo-300'}`}>
+                  <span className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-bodydark2 group-hover:text-white'}`}>
                     {icon}
                   </span>
                   <span>{label}</span>
-                  {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/80" />}
                 </NavLink>
               </li>
             );
@@ -111,8 +109,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       </nav>
 
       {/* Footer */}
-      <div className="px-5 py-4 border-t border-white/10">
-        <p className="text-[10px] text-white/20 text-center">Sistema de Tesis © {new Date().getFullYear()}</p>
+      <div className="px-5 py-4 border-t border-strokedark">
+        <p className="text-[10px] text-bodydark2 text-center">Sistema de Tesis © {new Date().getFullYear()}</p>
       </div>
     </aside>
   );

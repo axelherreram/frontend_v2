@@ -40,68 +40,68 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   });
 
   const linkClass = (active: boolean) =>
-    `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group
+    `flex items-center gap-3.5 px-4 py-3 rounded-sm text-sm font-medium transition-all duration-200 group
     ${active
-      ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/25'
-      : 'text-white/60 hover:text-white hover:bg-white/8'}`;
+      ? 'bg-[#3C50E0] text-white'
+      : 'text-bodydark1 hover:bg-[#333A48]'}`;
 
   const subLinkClass = (isActive: boolean) =>
-    `flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150
-    ${isActive ? 'text-white bg-white/10' : 'text-white/50 hover:text-white hover:bg-white/5'}`;
+    `flex items-center gap-2 px-3 py-2 rounded-sm text-xs font-medium transition-all duration-150
+    ${isActive ? 'text-white bg-[#3C50E0]/80' : 'text-bodydark2 hover:text-white hover:bg-[#333A48]'}`;
 
   return (
     <aside
       ref={sidebar}
       className={`absolute left-0 top-0 z-9999 flex h-screen w-72 flex-col overflow-hidden
-        bg-gradient-to-b from-[#1a1230] to-[#0f0c1e]
+        bg-[#1C2434]
         duration-300 ease-linear lg:static lg:translate-x-0
-        shadow-2xl border-r border-white/5
+        border-r border-strokedark
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
+      <div className="flex items-center justify-between px-6 py-5.5 lg:py-6.5 border-b border-strokedark">
         <NavLink to="/administrador/graficas" className="flex items-center gap-3">
           <img src={Logo} alt="Logo" className="h-29 w-auto" />
         </NavLink>
         <button
           ref={trigger}
           onClick={() => setSidebarOpen(false)}
-          className="lg:hidden p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all"
+          className="lg:hidden p-1.5 rounded-lg text-bodydark hover:text-white transition-all"
         >
           <X size={20} />
         </button>
       </div>
 
       {/* Role badge */}
-      <div className="px-5 py-3">
+      <div className="px-6 py-3">
         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-          bg-violet-500/20 text-violet-300 border border-violet-500/30 tracking-wide uppercase">
+          bg-[#3C50E0]/20 text-[#818CF8] border border-[#3C50E0]/30 tracking-wide uppercase">
           Administrador
         </span>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-2 no-scrollbar">
-        <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-white/30">
+      <nav className="flex-1 overflow-y-auto px-4 py-2 no-scrollbar">
+        <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-bodydark2">
           Menú Principal
         </p>
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-col gap-1.5">
 
           {/* Inicio (collapsible) */}
           <li>
             <button
               onClick={() => setInicioOpen(o => !o)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-sm text-sm font-medium transition-all duration-200
                 ${(pathname.includes('/administrador/graficas') || pathname.includes('/administrador/bitacora'))
-                  ? 'text-white bg-white/10'
-                  : 'text-white/60 hover:text-white hover:bg-white/8'}`}
+                  ? 'bg-[#333A48] text-white'
+                  : 'text-bodydark1 hover:bg-[#333A48]'}`}
             >
-              <BarChart2 size={20} className="flex-shrink-0 text-violet-400" />
+              <BarChart2 size={20} className="flex-shrink-0 text-bodydark2" />
               <span className="flex-1 text-left">Inicio</span>
               <ChevronDown size={16} className={`transition-transform duration-200 ${inicioOpen ? 'rotate-180' : ''}`} />
             </button>
             {inicioOpen && (
-              <ul className="mt-1 ml-8 flex flex-col gap-0.5 border-l border-white/10 pl-3">
+              <ul className="mt-1 ml-8 flex flex-col gap-0.5 border-l border-strokedark pl-3">
                 <li>
                   <NavLink to="/administrador/graficas" onClick={() => setSidebarOpen(false)}
                     className={({ isActive }) => subLinkClass(isActive)}>
@@ -122,17 +122,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <li>
             <button
               onClick={() => setEstudiantesOpen(o => !o)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-sm text-sm font-medium transition-all duration-200
                 ${(pathname.includes('/administrador/subir-estudiantes') || pathname.includes('/administrador/listado-estudiantes'))
-                  ? 'text-white bg-white/10'
-                  : 'text-white/60 hover:text-white hover:bg-white/8'}`}
+                  ? 'bg-[#333A48] text-white'
+                  : 'text-bodydark1 hover:bg-[#333A48]'}`}
             >
-              <Users size={20} className="flex-shrink-0 text-violet-400" />
+              <Users size={20} className="flex-shrink-0 text-bodydark2" />
               <span className="flex-1 text-left">Estudiantes</span>
               <ChevronDown size={16} className={`transition-transform duration-200 ${estudiantesOpen ? 'rotate-180' : ''}`} />
             </button>
             {estudiantesOpen && (
-              <ul className="mt-1 ml-8 flex flex-col gap-0.5 border-l border-white/10 pl-3">
+              <ul className="mt-1 ml-8 flex flex-col gap-0.5 border-l border-strokedark pl-3">
                 <li>
                   <NavLink to="/administrador/subir-estudiantes" onClick={() => setSidebarOpen(false)}
                     className={({ isActive }) => subLinkClass(isActive)}>
@@ -153,9 +153,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <li>
             <NavLink to="/administrador/crear-tareas" onClick={() => setSidebarOpen(false)}
               className={() => linkClass(pathname === '/administrador/crear-tareas')}>
-              <ClipboardList size={20} className="flex-shrink-0 text-violet-400 group-hover:scale-110 transition-transform" />
+              <ClipboardList size={20} className="flex-shrink-0 text-bodydark2 group-hover:text-white" />
               <span>Crear Tareas</span>
-              {pathname === '/administrador/crear-tareas' && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/80" />}
             </NavLink>
           </li>
 
@@ -163,9 +162,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <li>
             <NavLink to="/administrador/calendario" onClick={() => setSidebarOpen(false)}
               className={() => linkClass(pathname === '/administrador/calendario')}>
-              <Calendar size={20} className="flex-shrink-0 text-violet-400 group-hover:scale-110 transition-transform" />
+              <Calendar size={20} className="flex-shrink-0 text-bodydark2 group-hover:text-white" />
               <span>Calendario</span>
-              {pathname === '/administrador/calendario' && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/80" />}
             </NavLink>
           </li>
 
@@ -173,9 +171,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <li>
             <NavLink to="/administrador/enviar-revision" onClick={() => setSidebarOpen(false)}
               className={() => linkClass(pathname === '/administrador/enviar-revision')}>
-              <Send size={20} className="flex-shrink-0 text-violet-400 group-hover:scale-110 transition-transform" />
+              <Send size={20} className="flex-shrink-0 text-bodydark2 group-hover:text-white" />
               <span>Enviar a Revisión</span>
-              {pathname === '/administrador/enviar-revision' && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/80" />}
             </NavLink>
           </li>
 
@@ -183,8 +180,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       </nav>
 
       {/* Footer */}
-      <div className="px-5 py-4 border-t border-white/10">
-        <p className="text-[10px] text-white/20 text-center">Sistema de Tesis © {new Date().getFullYear()}</p>
+      <div className="px-5 py-4 border-t border-strokedark">
+        <p className="text-[10px] text-bodydark2 text-center">Sistema de Tesis © {new Date().getFullYear()}</p>
       </div>
     </aside>
   );
