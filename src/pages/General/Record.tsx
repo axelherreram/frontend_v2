@@ -4,85 +4,75 @@ import { getRevisionesAprobadas } from "../../ts/ThesisCoordinatorandReviewer/Ge
 import TourRecord from "../../components/Tours/ThesisCoordinator/TourRecord"
 import type React from "react"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
-import { Search, Loader2, ChevronLeft, ChevronRight } from "lucide-react" // Import Lucide React icons
+import { Search, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
+
+const ITEMS_PER_PAGE = 10
 
 /**
- * Component for displaying approved thesis reviews
+ * Component for displaying approved thesis reviews (server-side pagination)
  */
 const Record: React.FC = () => {
   const navigate = useNavigate()
-  // State declarations
-  const [revisiones, setRevisiones] = useState<any[]>([]) // Datos de las revisiones
-  const [searchCarnet, setSearchCarnet] = useState("") // Campo de búsqueda del carnet
-  const [order, setOrder] = useState<"asc" | "desc">("asc") // Orden de las revisiones
-  const [filteredRevisiones, setFilteredRevisiones] = useState(revisiones) // Revisión filtrada
-  const [isCarnetSearch, setIsCarnetSearch] = useState(false) // Nuevo estado para rastrear si se buscó por carnet
-  const [isSearching, setIsSearching] = useState<boolean>(false) // Added for search input loading state
-  const [role, setRole] = useState<number | null>(null);
 
-  // State hooks for pagination
+  const [revisiones, setRevisiones] = useState<any[]>([])
+  const [searchCarnet, setSearchCarnet] = useState("")
+  const [order, setOrder] = useState<"asc" | "desc">("asc")
+  const [isCarnetSearch, setIsCarnetSearch] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
+  const [role, setRole] = useState<number | null>(null)
+
+  // Server-side pagination state
   const [currentPage, setCurrentPage] = useState(1)
-  const [revisionesPerPage, setRevisionesPerPage] = useState(5) // Default to 5 items per page
-  const [maxPageButtons, setMaxPageButtons] = useState(10) // Default to 10 page buttons
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
 
-  /**
-   * Fetch approved reviews from the API
-   */
-  const fetchRevisiones = useCallback(async (order: "asc" | "desc", carnet: string) => {
-    setIsSearching(true) // Set searching state to true
-    try {
-      const revisions = await getRevisionesAprobadas(order, carnet)
-      setRevisiones(revisions)
-      setFilteredRevisiones(revisions) // Inicializa el estado de revisiones filtradas
-      // Actualizar el estado de búsqueda por carnet
-      setIsCarnetSearch(carnet.length >= 10)
-    } catch (error) {
-      setRevisiones([])
-      setFilteredRevisiones([])
-      setIsCarnetSearch(carnet.length >= 10)
-    } finally {
-      setIsSearching(false) // Set searching state to false
-    }
+  // Recover role from localStorage
+  useEffect(() => {
+    const storedRole = localStorage.getItem("userRole")
+    if (storedRole) setRole(Number(storedRole))
   }, [])
 
-  // Recover the localStorage role
-  useEffect(() => {
-    const storedRole = localStorage.getItem('userRole');
-    if (storedRole) {
-      setRole(Number(storedRole));
-    }
-  }, []);
+  /**
+   * Fetch approved reviews with server-side pagination
+   */
+  const fetchRevisiones = useCallback(
+    async (order: "asc" | "desc", carnet: string, page: number) => {
+      setIsSearching(true)
+      try {
+        const result = await getRevisionesAprobadas(order, carnet || undefined, page, ITEMS_PER_PAGE)
+        setRevisiones(result.data)
+        setTotalPages(result.pagination.totalPages)
+        setTotalRecords(result.pagination.total)
+        setIsCarnetSearch(carnet.length >= 10)
+      } catch {
+        setRevisiones([])
+        setTotalPages(1)
+        setTotalRecords(0)
+        setIsCarnetSearch(carnet.length >= 10)
+      } finally {
+        setIsSearching(false)
+      }
+    },
+    [],
+  )
 
   /**
-   * Load reviews when carnet or order changes
+   * Re-fetch when order, carnet or page changes
    */
   useEffect(() => {
+    const carnetValue = searchCarnet.length >= 10 ? searchCarnet : ""
     const timer = setTimeout(() => {
-      const carnetValue = searchCarnet.length >= 10 ? searchCarnet : "" // Validar formato del carnet (longitud >= 10)
-      fetchRevisiones(order, carnetValue) // Ejecutar la API con carnet vacío o el carnet completo
-    }, 300) // Small delay to improve performance
+      fetchRevisiones(order, carnetValue, currentPage)
+    }, 300)
     return () => clearTimeout(timer)
-  }, [order, searchCarnet, fetchRevisiones]) // Depende de searchCarnet y order
-
-  // Pagination logic
-  const indexOfLastRevision = currentPage * revisionesPerPage
-  const indexOfFirstRevision = indexOfLastRevision - revisionesPerPage
-  const currentRevisiones = filteredRevisiones.slice(indexOfFirstRevision, indexOfLastRevision)
-  const totalPages = Math.ceil(filteredRevisiones.length / revisionesPerPage)
+  }, [order, searchCarnet, currentPage, fetchRevisiones])
 
   /**
-   * Handle pagination
+   * Reset to page 1 when filters change
    */
-  const paginate = (pageNumber: number) => {
-    setCurrentPage(pageNumber)
-  }
-
-  /**
-   * Change the sort order of reviews
-   */
-  const handleChangeOrder = () => {
-    setOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"))
-  }
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [order, searchCarnet])
 
   /**
    * Format date to local format
@@ -101,64 +91,34 @@ const Record: React.FC = () => {
   }
 
   /**
-   * Navigate to review details page
+   * Navigate to review details page — role-aware
    */
   const handleVerDetalle = (userId: number) => {
     let basePath = ""
-
     switch (role) {
-      case 5:
-        basePath = "/coordinadorgeneral/historial/detalle"
-        break
-      case 6:
-        basePath = "/coordinadortesis/historial/detalle"
-        break
-      case 7:
-        basePath = "/revisortesis/historial/detalle"
-        break
-      default:
-        
-        return
+      case 5: basePath = "/coordinadorgeneral/historial/detalle"; break
+      case 6: basePath = "/coordinadortesis/historial/detalle"; break
+      case 7: basePath = "/revisortesis/historial/detalle"; break
+      default: return
     }
-
     navigate(basePath, { state: { userId } })
   }
 
-  /**
-   * Handle search input change
-   */
+  const handleChangeOrder = () => setOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+
   const handleChangeSearchCarnet = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newCarnet = e.target.value
-    setSearchCarnet(newCarnet) // Actualizar el estado
+    setSearchCarnet(e.target.value)
   }
 
-  /**
-   * Adjust page configuration based on window size
-   */
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setRevisionesPerPage(8) // Ajusta el número de elementos por página en pantallas pequeñas
-        setMaxPageButtons(5) // Ajusta la cantidad de botones de paginación en pantallas pequeñas
-      } else {
-        setRevisionesPerPage(5) // Ajusta el número de elementos por página en pantallas grandes
-        setMaxPageButtons(10) // Ajusta la cantidad de botones de paginación en pantallas grandes
-      }
-    }
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => {
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [])
-
+  // Page buttons range (up to 7 buttons)
   const getPageRange = () => {
+    const maxButtons = 7
+    const half = Math.floor(maxButtons / 2)
+    let start = Math.max(1, currentPage - half)
+    const end = Math.min(totalPages, start + maxButtons - 1)
+    if (end - start < maxButtons - 1) start = Math.max(1, end - maxButtons + 1)
     const range: number[] = []
-    const startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2))
-    const endPage = Math.min(totalPages, startPage + maxPageButtons - 1)
-    for (let i = startPage; i <= endPage; i++) {
-      range.push(i)
-    }
+    for (let i = start; i <= end; i++) range.push(i)
     return range
   }
 
@@ -166,6 +126,7 @@ const Record: React.FC = () => {
     <>
       <Breadcrumb pageName="Historial de revisiones" />
       <div className="mx-auto max-w-6xl px-4 py-6">
+        {/* Controls */}
         <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative flex items-center flex-grow w-full md:w-auto">
             <input
@@ -194,12 +155,13 @@ const Record: React.FC = () => {
             <TourRecord />
           </div>
         </div>
+
+        {/* Table */}
         <div className="overflow-x-auto rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
           <table id="tabla-revisiones" className="min-w-full bg-white dark:bg-gray-800">
             <thead className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4 text-center">Nombre</th>
-                {/* Estas columnas se ocultan en pantallas pequeñas */}
                 <th className="py-3 px-4 text-center hidden md:table-cell">Carnet</th>
                 <th className="py-3 px-4 text-center hidden md:table-cell">Fec. Solicitud</th>
                 <th className="py-3 px-4 text-center hidden md:table-cell">Estado</th>
@@ -207,15 +169,14 @@ const Record: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {currentRevisiones.length > 0 ? (
-                currentRevisiones.map((revision) => (
+              {revisiones.length > 0 ? (
+                revisiones.map((revision) => (
                   <tr
                     key={revision.revision_thesis_id}
                     className="border-t border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 group"
                     onClick={() => handleVerDetalle(revision.user.user_id)}
                   >
                     <td className="py-3 px-4 text-center text-black dark:text-white">{revision.user.name}</td>
-                    {/* Estas columnas se ocultan en pantallas pequeñas */}
                     <td className="py-3 px-4 text-center text-black dark:text-white hidden md:table-cell">
                       {revision.user.carnet}
                     </td>
@@ -228,50 +189,61 @@ const Record: React.FC = () => {
                     <td className="py-3 px-4 text-center">
                       <button
                         id="boton-ver-detalle"
-                        className="px-4 py-2 bg-blue-500 text-white rounded-md">Ver detalle
+                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-md shadow-md hover:shadow-lg transition-all duration-300"
+                      >
+                        Ver detalle
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-500 dark:text-gray-400">
-                    {isCarnetSearch ? "No existe carnet del Estudiante" : "No hay solicitudes de revisión"}
+                  <td colSpan={5} className="py-8 text-center text-gray-500 dark:text-gray-400">
+                    {isCarnetSearch ? "No existe carnet del Estudiante" : "No hay registros en el historial"}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-        {/* Pagination */}
+
+        {/* Pagination — server-side */}
         {totalPages > 1 && (
-          <div className="mt-8 flex justify-center items-center space-x-2">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            {getPageRange().map((page) => (
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Mostrando página <span className="font-semibold text-gray-700 dark:text-gray-200">{currentPage}</span> de{" "}
+              <span className="font-semibold text-gray-700 dark:text-gray-200">{totalPages}</span>{" "}
+              ({totalRecords} registros)
+            </p>
+            <div className="flex items-center gap-1.5">
               <button
-                key={page}
-                onClick={() => paginate(page)}
-                className={`px-4 py-2 rounded-full font-medium transition-all duration-300 shadow-sm ${currentPage === page
-                  ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg"
-                  : "bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
-                  }`}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
               >
-                {page}
+                <ChevronLeft className="h-4 w-4" />
               </button>
-            ))}
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
+              {getPageRange().map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                    currentPage === page
+                      ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow"
+                      : "bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>

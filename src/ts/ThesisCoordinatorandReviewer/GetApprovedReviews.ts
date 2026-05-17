@@ -1,81 +1,82 @@
 import axios from 'axios';
 
-// Define the interface for the "Approved Revision" structure
 interface ApprovedRevision {
-  revision_thesis_id: number;   // Unique identifier for the thesis revision
-  date_revision: string;        // Date of the revision
-  thesis_dir: string;           // URL of the thesis document
-  approvaltheses: Array<{
-    status: string;
-    date_approved: string;
-  }>;  // Array containing approval details
-  user: {
-    user_id: number;            // ID of the user (student)
-    name: string;               // Name of the student
-    carnet: string;             // Carnet (ID) of the student
-  };
-  sede: {
-    nameSede: string;           // Name of the associated sede
-  };
+  revision_thesis_id: number;
+  date_revision: string;
+  thesis_dir: string;
+  approvaltheses: Array<{ status: string; date_approved: string }>;
+  user: { user_id: number; name: string; carnet: string };
+  sede: { nameSede: string };
 }
 
-// Function to fetch approved thesis revisions
+export interface PaginationMeta {
+  total: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
+}
+
+export interface ApprovedRevisionsResponse {
+  data: ApprovedRevision[];
+  pagination: PaginationMeta;
+}
+
+// Fetch approved thesis revisions with server-side pagination
 export const getRevisionesAprobadas = async (
-  order: string = 'asc',        // Order of the results ('asc' or 'desc')
-  carnet?: string               // Optional carnet filter for the student
-): Promise<ApprovedRevision[]> => {
+  order: string = 'asc',
+  carnet?: string,
+  page: number = 1,
+  limit: number = 10,
+): Promise<ApprovedRevisionsResponse> => {
   try {
-    // Retrieve the authentication token from localStorage
     const token = localStorage.getItem('authToken');
-    if (!token) {
-      throw new Error('Token de autenticación no encontrado');  // If the token is not found, throw an error
-    }
+    if (!token) throw new Error('Token de autenticación no encontrado');
 
-    // Build the URL with the query parameters
-    let url = `${import.meta.env.VITE_API_URL}/revision-thesis/approved?order=${order}`;
-    if (carnet) {
-      url += `&carnet=${carnet}`;
-    }
+    const params = new URLSearchParams({ order, page: String(page), limit: String(limit) });
+    if (carnet) params.append('carnet', carnet);
 
-    // Make the GET request to the specified URL to fetch the approved revisions
+    const url = `${import.meta.env.VITE_API_URL}/revision-thesis/approved?${params.toString()}`;
+
     const response = await axios.get(url, {
       headers: {
-        'Authorization': `Bearer ${token}`,  // Include the authorization token in the request headers
-        'Content-Type': 'application/json',  // Specify that the content type is JSON
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
     });
 
-    // Check if the response contains the necessary data
     if (response.data && Array.isArray(response.data.data)) {
-      // Map through the revisions and return them in the ApprovedRevision structure
-      return response.data.data.map((revision: any) => ({
-        revision_thesis_id: revision.revision_thesis_id,  // Assign the thesis revision ID
-        date_revision: revision.date_revision,            // Assign the revision date
-        thesis_dir: revision.thesis_dir,                  // Assign the thesis document URL
-        approvaltheses: revision.approvaltheses,          // Assign the approval details
-        user: {
-          user_id: revision.User.user_id,                 // Assign the student's user ID
-          name: revision.User.name,                       // Assign the student's name
-          carnet: revision.User.carnet,                   // Assign the student's carnet (ID)
+      return {
+        data: response.data.data.map((revision: any) => ({
+          revision_thesis_id: revision.revision_thesis_id,
+          date_revision: revision.date_revision,
+          thesis_dir: revision.thesis_dir,
+          approvaltheses: revision.approvaltheses ?? [],
+          user: {
+            user_id: revision.User?.user_id ?? revision.user?.user_id,
+            name: revision.User?.name ?? revision.user?.name,
+            carnet: revision.User?.carnet ?? revision.user?.carnet,
+          },
+          sede: {
+            nameSede: revision.sede?.nameSede ?? '',
+          },
+        })),
+        pagination: response.data.pagination ?? {
+          total: response.data.data.length,
+          totalPages: 1,
+          currentPage: page,
+          limit,
         },
-        sede: {
-          nameSede: revision.sede.nameSede,              // Assign the associated sede name
-        },
-      }));
+      };
     }
 
-    // If the response does not contain valid data, throw an error
     throw new Error('La respuesta no contiene datos de revisiones aprobadas válidos.');
   } catch (error) {
-    // Enhanced error handling
     if (axios.isAxiosError(error)) {
       const errorMessage = error.response?.data
-        ? JSON.stringify(error.response?.data)  // If the error has a response, stringify it
-        : 'Error desconocido';                   // Otherwise, return a generic unknown error message
+        ? JSON.stringify(error.response?.data)
+        : 'Error desconocido';
       throw new Error(`Error de la API: ${errorMessage}`);
     }
-
-    // If the error is not an Axios error, throw a generic unknown error
     throw new Error('Error desconocido');
   }
 };

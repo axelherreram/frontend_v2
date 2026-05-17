@@ -35,7 +35,6 @@ interface ThesisRevisionInfo {
     carnet: string;
     email: string;
     profilePhoto: string | null;
-    profilePhoto: string | null;
     location: {
       nameSede: string;
     } | null;
@@ -86,11 +85,11 @@ export const getComentariosRevision = async (user_id: number): Promise<ThesisRev
           carnet: revision.user?.carnet ?? 'Sin carnet',
           email: revision.user?.email ?? 'Sin correo',
           profilePhoto: revision.user?.profilePhoto ?? null,
-          location: revision.user?.location 
-            ? { nameSede: revision.user.location.nameSede } 
+          location: revision.user?.location
+            ? { nameSede: revision.user.location.nameSede }
             : null,
-          year: revision.user?.year 
-            ? { year: revision.user.year.year } 
+          year: revision.user?.year
+            ? { year: revision.user.year.year }
             : null,
         },
       }));

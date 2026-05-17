@@ -167,7 +167,7 @@ const StudentReviewComments: React.FC = () => {
                           : "bg-red-500"
                       } rounded-t-xl`}
                   >
-                    <h2 className="text-lg font-bold text-white">Revisión #{review.revision_thesis_id}</h2>
+                    <h2 className="text-lg font-bold text-white">Revisión #{reviews.length - index}</h2>
                     <span
                       className={`px-3 py-1 rounded-full text-sm font-medium ${!review.AssignedReviews[0]?.commentsRevisions ||
                           review.AssignedReviews[0].commentsRevisions.length === 0 ||
@@ -293,22 +293,19 @@ const StudentReviewComments: React.FC = () => {
                       )}
                     </div>
 
-                    {/* SOLO en el primer registro */}
-                    {index === 0 && (
+                    {review.thesis_dir && (
                       <div className="mt-6 flex flex-wrap gap-4">
-                        {review.thesis_dir && (
-                          <button
-                            className="flex items-center px-5 py-2.5 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            onClick={() =>
-                              handleDownload(
-                                review.thesis_dir,
-                                `tesis_${review.AssignedReviews[0].user.user_id}.pdf`,
-                              )
-                            }
-                          >
-                            <Download className="mr-2 h-5 w-5" /> Descargar Tesis
-                          </button>
-                        )}
+                        <button
+                          className="flex items-center px-5 py-2.5 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          onClick={() =>
+                            handleDownload(
+                              review.thesis_dir,
+                              `tesis_revision_${reviews.length - index}.pdf`,
+                            )
+                          }
+                        >
+                          <Download className="mr-2 h-5 w-5" /> Descargar Tesis
+                        </button>
                       </div>
                     )}
                   </div>

@@ -27,21 +27,48 @@ const SubmitReview: React.FC = () => {
   }
 
   /**
-   * Handles changes to the thesis file input
+   * Validates that a file is a PDF
+   */
+  const isPdf = (file: File) => file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")
+
+  /**
+   * Handles changes to the thesis file input — PDF only
    */
   const handleFile1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setApprovedThesis(e.target.files[0])
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!isPdf(file)) {
+      Swal.fire({
+        icon: "error",
+        title: "Formato no válido",
+        text: "La tesis debe ser un archivo PDF.",
+        confirmButtonColor: "#ef4444",
+      })
+      e.target.value = ""
+      setApprovedThesis(null)
+      return
     }
+    setApprovedThesis(file)
   }
 
   /**
-   * Handles changes to the approval letter file input
+   * Handles changes to the approval letter file input — PDF only
    */
   const handleFile2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setApprovalLetter(e.target.files[0])
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!isPdf(file)) {
+      Swal.fire({
+        icon: "error",
+        title: "Formato no válido",
+        text: "La carta de aprobación debe ser un archivo PDF.",
+        confirmButtonColor: "#ef4444",
+      })
+      e.target.value = ""
+      setApprovalLetter(null)
+      return
     }
+    setApprovalLetter(file)
   }
 
   /**
@@ -90,7 +117,6 @@ const SubmitReview: React.FC = () => {
     }
   }
 
-  // campusId is derived from profile context — no useEffect needed
 
   return (
     <>
@@ -131,6 +157,7 @@ const SubmitReview: React.FC = () => {
               <input
                 type="file"
                 id="file1"
+                accept="application/pdf"
                 onChange={handleFile1Change}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
@@ -148,6 +175,7 @@ const SubmitReview: React.FC = () => {
                       Arrastra y suelta tu tesis aquí
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">o haz clic para seleccionar</p>
+                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Solo se permiten archivos PDF</p>
                   </>
                 )}
               </div>
@@ -162,6 +190,7 @@ const SubmitReview: React.FC = () => {
               <input
                 type="file"
                 id="file2"
+                accept="application/pdf"
                 onChange={handleFile2Change}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
@@ -179,6 +208,7 @@ const SubmitReview: React.FC = () => {
                       Arrastra y suelta tu carta aquí
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">o haz clic para seleccionar</p>
+                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Solo se permiten archivos PDF</p>
                   </>
                 )}
               </div>
