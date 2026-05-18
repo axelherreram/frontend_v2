@@ -60,6 +60,7 @@ const Login: React.FC = () => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_AUTH_URL}/login`, { email, password })
       localStorage.setItem("authToken", response.data.token)
+      localStorage.setItem("refreshToken", response.data.refreshToken)
       localStorage.setItem("userRole", response.data.rol)
 
       // Actualizamos el estado global del perfil y años inmediatamente
