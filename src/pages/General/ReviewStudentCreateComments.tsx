@@ -5,6 +5,7 @@ import { ArrowLeft, Download, CheckCircle, MessageSquare } from "lucide-react"
 import type React from "react"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
 import EnviaComentarios from "../../components/Modals/SendComment"
+import { getSecureFileUrl } from "../../ts/secureFile"
 
 /**
  * Component for reviewers to create comments on student theses
@@ -301,7 +302,7 @@ const ReviewStudentCreateComments: React.FC = () => {
                         <button
                           className="flex items-center px-5 py-2.5 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                           onClick={() =>
-                            handleDownload(review.thesis_dir, `tesis_${review.AssignedReviews[0].user.user_id}.pdf`)
+                            handleDownload(getSecureFileUrl(review.thesis_dir), `tesis_${review.AssignedReviews[0].user.user_id}.pdf`)
                           }
                         >
                           <Download className="mr-2 h-5 w-5" /> Descargar Tesis

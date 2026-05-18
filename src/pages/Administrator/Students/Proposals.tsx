@@ -7,6 +7,7 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import Swal from "sweetalert2"
 import TourProposals from "../../../components/Tours/Administrator/TourProposals"
 import { ArrowLeft, FileText, XCircle } from "lucide-react"
+import { getSecureFileUrl } from "../../../ts/secureFile"
 
 
 /**
@@ -53,33 +54,31 @@ const Proposals: React.FC = () => {
    */
   const fetchPropuesta = async (user_id: number) => {
     try {
-      // Call to get the proposal data based on the student ID
-      const propuestaData = await getPropuesta(user_id)
-      // If proposal data is returned, update the state
+      const propuestaData = await getPropuesta(user_id);
+
       if (propuestaData) {
-        setPdfUrl(propuestaData.file_path) // Set PDF URL
-        setThesisSubmissionsId(propuestaData.thesisSubmissions_id) // Set thesis submission ID
-        // If proposal is not approved, reset the approval state
+        // El estudiante ya subio una propuesta
+        setPdfUrl(propuestaData.file_path);
+        setThesisSubmissionsId(propuestaData.thesisSubmissions_id);
         if (propuestaData.approved_proposal === 0) {
-          setAprobadaPropuesta(null)
+          setAprobadaPropuesta(null);
         } else {
-          // If proposal is approved, update the state with the proposal ID
-          setAprobadaPropuesta(propuestaData.approved_proposal)
-          setSelectedPropuesta(propuestaData.approved_proposal)
+          setAprobadaPropuesta(propuestaData.approved_proposal);
+          setSelectedPropuesta(propuestaData.approved_proposal);
         }
       } else {
-        // If no proposal is found, update state to indicate this
-        setNoPropuestas(true)
+        // null = 404 = el estudiante aun no ha subido nada
+        setNoPropuestas(true);
       }
-    } catch (error) {
-      // Show error if proposal fetching fails
+    } catch {
+      // Error inesperado (401, red, 500)
       Swal.fire({
         icon: "error",
         title: "Error al obtener la propuesta",
-        text: "No se pudo cargar la propuesta.",
+        text: "No se pudo cargar la propuesta. Verifica tu conexión o intenta de nuevo.",
         confirmButtonColor: "#ef4444",
         confirmButtonText: "De Acuerdo",
-      })
+      });
     }
   }
 
@@ -230,7 +229,7 @@ const Proposals: React.FC = () => {
                   {" "}
                   {/* 4:3 aspect ratio for mobile, 16:9 for desktop */}
                   <iframe
-                    src={pdfUrl}
+                    src={getSecureFileUrl(pdfUrl)}
                     title="Vista PDF"
                     className="absolute top-0 left-0 w-full h-full rounded-lg shadow-inner border border-gray-300 dark:border-gray-600"
                     allowFullScreen

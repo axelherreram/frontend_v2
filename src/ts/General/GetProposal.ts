@@ -10,27 +10,32 @@ export interface Propuesta {
   approved_proposal: number; // Status indicator (approved or not)
 }
 
-// Function to retrieve a user's thesis proposal submission
+/**
+ * Obtiene la propuesta de tesis de un estudiante.
+ * Retorna `null` cuando el estudiante aún no ha subido nada (404).
+ * Lanza un error para cualquier otro fallo (401, 500, red, etc.).
+ */
 export const getPropuesta = async (userId: number): Promise<Propuesta | null> => {
+  const token = localStorage.getItem('authToken');
+  if (!token) throw new Error('Token de autenticación no encontrado');
+
   try {
-    // Retrieve the authentication token from localStorage
-    const token = localStorage.getItem('authToken');
-
-    // If no token is found, throw an error
-    if (!token) {
-      throw new Error('Token de autenticación no encontrado');
-    }
-
-    // Make a GET request to the specified URL with the correct parameters
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/thesis-submission/${userId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`, // Include authentication token in the request headers
-        'Content-Type': 'application/json', // Specify the content type as JSON
-      },
-    });
-
-    return response.data; // Return the data received from the API
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/thesis-submission/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data; // 200 → hay propuesta
   } catch (error) {
-    return null; // Return null if an error occurs
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      // El estudiante aún no ha subido ninguna propuesta — es un estado válido
+      return null;
+    }
+    // Cualquier otro error (401, 500, red) debe propagarse para que el componente pueda manejarlo
+    throw error;
   }
 };

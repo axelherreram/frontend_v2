@@ -38,24 +38,6 @@ const Chapters: React.FC = () => {
   const isComentarioBloqueado = comentariosPrevios.length > 0 && comentariosPrevios[0].comment_active === false
 
   /**
-   * Function to check if the "Enviar Comentario" button should be disabled due to the deadline
-   */
-  const isButtonDisabled = (): boolean => {
-    if (!tarea || !tarea.endTask || !tarea.endTime) return true // Ensure tarea and its properties exist
-
-    const currentDate = new Date() // Current date and time
-    const endDate = new Date(tarea.endTask) // Task end date
-
-    // Combine date and time into a format like YYYY-MM-DD HH:mm:ss
-    const formattedCurrentDateTime = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, "0")}-${currentDate.getDate().toString().padStart(2, "0")} ${currentDate.getHours().toString().padStart(2, "0")}:${currentDate.getMinutes().toString().padStart(2, "0")}:${currentDate.getSeconds().toString().padStart(2, "0")}`
-    const formattedEndDateTime = `${endDate.getFullYear()}-${(endDate.getMonth() + 1).toString().padStart(2, "0")}-${endDate.getDate().toString().padStart(2, "0")} ${tarea.endTime}`
-
-    if (isNaN(endDate.getTime())) return true // If the end date is invalid, disable the button
-
-    return formattedCurrentDateTime > formattedEndDateTime // Disable if the current date is later than the deadline
-  }
-
-  /**
    * Function to format the date as day/month/year
    */
   const formatearFecha = (fecha: string): string => {
@@ -86,7 +68,7 @@ const Chapters: React.FC = () => {
         }))
         setComentariosPrevios(comentariosFormateados) // Update the state with the formatted comments
       } catch (error) {
-        
+
       }
     }
     cargarComentarios()
@@ -263,7 +245,7 @@ const Chapters: React.FC = () => {
           </h4>
           <textarea
             id="textarea-comentario"
-            disabled={isButtonDisabled() || isComentarioBloqueado}
+            disabled={isComentarioBloqueado}
             value={comentario}
             onChange={handleComentarioChange}
             className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white placeholder:text-gray-400 flex-grow"
@@ -271,19 +253,18 @@ const Chapters: React.FC = () => {
             placeholder="Escribe tu comentario aquí..."
           />
           <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-2">
-            {(isButtonDisabled() || isComentarioBloqueado) && (
+            {isComentarioBloqueado && (
               <div className="text-red-500 text-sm font-medium">
-                {isButtonDisabled() && <p>Tarea llegó a fecha límite.</p>}
-                {isComentarioBloqueado && <p>Has bloqueado los comentarios.</p>}
+                <p>Has bloqueado los comentarios.</p>
               </div>
             )}
             <button
               id="enviar-button"
-              disabled={isButtonDisabled() || isComentarioBloqueado || comentario.trim() === ""}
-              className={`px-6 py-2 rounded-full text-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg ${isButtonDisabled() || isComentarioBloqueado || comentario.trim() === ""
+              disabled={isComentarioBloqueado || comentario.trim() === ""}
+              className={`px-6 py-2 rounded-full text-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg ${isComentarioBloqueado || comentario.trim() === ""
                 ? "bg-gray-400 text-gray-700 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
-                } ${!(isButtonDisabled() || isComentarioBloqueado) && "md:ml-auto"}`}
+                } ${!isComentarioBloqueado && "md:ml-auto"}`}
               onClick={handleEnviarComentario}
             >
               Enviar Comentario
@@ -292,7 +273,7 @@ const Chapters: React.FC = () => {
         </div>
       </div>
       {/* Mostrar ViewStudentTask debajo de comentarios */}
-      <ViewStudentTask estudiante={estudiante} selectedAño={selectedAño} selectedCurso={selectedCurso} />
+      <ViewStudentTask estudiante={estudiante} taskId={tarea?.task_id} />
     </>
   )
 }

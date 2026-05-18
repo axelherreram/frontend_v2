@@ -332,11 +332,7 @@ const CourseInfo: React.FC = () => {
                           currentTarea.endTime,
                         )
                       }
-                      disabled={isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)}
-                      className={`px-6 py-3 rounded-xl font-semibold flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isDateOutOfRange(currentTarea.taskStart, currentTarea.startTime, currentTarea.endTask, currentTarea.endTime)
-                        ? "bg-gray-400 text-white cursor-not-allowed focus:ring-gray-500"
-                        : "bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500"
-                        }`}
+                      className="px-6 py-3 rounded-xl font-semibold flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500"
                     >
                       <MessageSquare className="mr-2 h-5 w-5" /> Comentarios
                     </button>

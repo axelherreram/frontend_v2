@@ -4,6 +4,7 @@ import { getComentariosRevision } from "../../ts/ThesisCoordinatorandReviewer/Ge
 import { ArrowLeft, Download, MessageSquare } from "lucide-react"
 import type React from "react"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
+import { getSecureFileUrl } from "../../ts/secureFile"
 
 /**
  * Component for displaying thesis review comments for students
@@ -299,7 +300,7 @@ const StudentReviewComments: React.FC = () => {
                           className="flex items-center px-5 py-2.5 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                           onClick={() =>
                             handleDownload(
-                              review.thesis_dir,
+                              getSecureFileUrl(review.thesis_dir),
                               `tesis_revision_${reviews.length - index}.pdf`,
                             )
                           }

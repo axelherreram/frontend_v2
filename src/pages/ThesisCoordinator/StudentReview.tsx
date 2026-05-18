@@ -4,7 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { getRevisionDetallePendi } from "../../ts/ThesisCoordinatorandReviewer/GetRevisionDetailPend"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
 import AsignaRevisor from "../../components/Modals/AssignReviewer"
-import { ArrowLeft, Download, User } from "lucide-react" // Import Lucide React icons
+import { ArrowLeft, Download, User } from "lucide-react"
+import { getSecureFileUrl } from "../../ts/secureFile"
 
 /**
  * Component for displaying student thesis review details
@@ -159,7 +160,7 @@ const StudentReview: React.FC = () => {
                       <div className="flex flex-wrap gap-4">
                         <button
                           className="flex items-center px-5 py-2.5 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                          onClick={() => handleDownload(revision.thesis_dir, `tesis_${revision.user.carnet}.pdf`)}
+                          onClick={() => handleDownload(getSecureFileUrl(revision.thesis_dir), `tesis_${revision.user.carnet}.pdf`)}
                         >
                           <Download className="mr-2 h-5 w-5" /> Descargar Tesis
                         </button>
@@ -172,7 +173,7 @@ const StudentReview: React.FC = () => {
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Vista previa del PDF</h3>
                     <iframe
-                      src={revision.thesis_dir}
+                      src={getSecureFileUrl(revision.thesis_dir)}
                       width="100%"
                       height="400"
                       className="mt-2 rounded-lg border border-gray-200 dark:border-gray-700"

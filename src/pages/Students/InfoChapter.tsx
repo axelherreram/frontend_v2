@@ -38,27 +38,6 @@ const InfoChapter: React.FC = () => {
   const isComentarioBloqueado = comentariosPrevios.length > 0 && comentariosPrevios[0].comment_active === false
 
   /**
-   * Function to check whether the button should be disabled based on the task end time
-   */
-  const isButtonDisabled = (): boolean => {
-    const currentDate = new Date()
-    const endDate = new Date(endTask) // Convert the passed endTask date into a Date object
-    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()) // Strip the time for current date comparison
-    const currentHour = currentDate.getHours()
-    const currentMinutes = currentDate.getMinutes()
-    const currentSeconds = currentDate.getSeconds()
-    // Format the current time into HH:MM:SS
-    const formattedCurrentTime = `${currentHour.toString().padStart(2, "0")}:${currentMinutes.toString().padStart(2, "0")}:${currentSeconds.toString().padStart(2, "0")}`
-    const formattedCurrentDateTime = `${currentDateOnly.toISOString().split("T")[0]} ${formattedCurrentTime}`
-    // Format the task's end time for comparison
-    const endDateOnly = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate()))
-    const formattedEndDateTime = `${endDateOnly.toISOString().split("T")[0]} ${endTime || ""}`
-    // Return true if the task's end date/time is in the past
-    if (isNaN(endDateOnly.getTime())) return true
-    return formattedCurrentDateTime > formattedEndDateTime
-  }
-
-  /**
    * Function to format dates into a user-friendly format (DD/MM/YYYY)
    */
   const formatearFecha = (fecha: string): string => {
@@ -220,7 +199,7 @@ const InfoChapter: React.FC = () => {
           </h4>
           <textarea
             id="textarea-comentario"
-            disabled={inputBloqueado || isButtonDisabled() || isComentarioBloqueado}
+            disabled={inputBloqueado || isComentarioBloqueado}
             value={comentario}
             onChange={handleComentarioChange}
             className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white placeholder:text-gray-400 flex-grow"
@@ -228,19 +207,19 @@ const InfoChapter: React.FC = () => {
             placeholder="Escribe tu comentario aquí..."
           />
           <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-2">
-            {(isButtonDisabled() || isComentarioBloqueado) && (
+            {(inputBloqueado || isComentarioBloqueado) && (
               <div className="text-red-500 text-sm font-medium">
-                {isButtonDisabled() && <p>Tarea llegó a fecha límite.</p>}
-                {isComentarioBloqueado && <p>Comentarios bloqueados.</p>}
+                {isComentarioBloqueado && <p>Comentarios bloqueados por el administrador.</p>}
+                {inputBloqueado && !isComentarioBloqueado && <p>Debes esperar una respuesta del administrador.</p>}
               </div>
             )}
             <button
               id="enviar-button"
-              disabled={isButtonDisabled() || isComentarioBloqueado || comentario.trim() === ""}
-              className={`px-6 py-2 rounded-full text-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg ${isButtonDisabled() || isComentarioBloqueado || comentario.trim() === ""
+              disabled={inputBloqueado || isComentarioBloqueado || comentario.trim() === ""}
+              className={`px-6 py-2 rounded-full text-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg ${inputBloqueado || isComentarioBloqueado || comentario.trim() === ""
                 ? "bg-gray-400 text-gray-700 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
-                } ${!(isButtonDisabled() || isComentarioBloqueado) && "md:ml-auto"}`}
+                } ${!(inputBloqueado || isComentarioBloqueado) && "md:ml-auto"}`}
               onClick={handleEnviarComentario}
             >
               Enviar Comentario

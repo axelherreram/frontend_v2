@@ -5,7 +5,8 @@ import { getPropuesta } from "../../../ts/General/GetProposal"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import Swal from "sweetalert2"
 import TourProposals from "../../../components/Tours/Administrator/TourProposals"
-import { ArrowLeft, FileText, XCircle } from "lucide-react" // Import Lucide React icons
+import { ArrowLeft, FileText, XCircle } from "lucide-react"
+import { getSecureFileUrl } from "../../../ts/secureFile"
 
 interface LocationState {
   tarea: string
@@ -92,7 +93,7 @@ const Proposals: React.FC = () => {
                   {" "}
                   {/* 4:3 aspect ratio for mobile, 16:9 for desktop */}
                   <iframe
-                    src={pdfUrl}
+                    src={getSecureFileUrl(pdfUrl)}
                     title="Vista PDF"
                     className="absolute top-0 left-0 w-full h-full rounded-lg shadow-inner border border-gray-300 dark:border-gray-600"
                     allowFullScreen

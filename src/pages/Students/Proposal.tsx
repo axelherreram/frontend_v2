@@ -7,7 +7,8 @@ import { getPropuesta } from "../../ts/General/GetProposal"
 import { getTareasSede, type Tarea } from "../../ts/General/GetTasksHeadquarters"
 import Swal from "sweetalert2"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
-import { FileText, XCircle } from "lucide-react" // Import Lucide React icons
+import { FileText, XCircle } from "lucide-react"
+import { getSecureFileUrl } from "../../ts/secureFile"
 
 /**
  * Component for uploading and managing thesis proposals
@@ -309,7 +310,7 @@ const Proposal: React.FC = () => {
                   {" "}
                   {/* 4:3 aspect ratio for mobile, 16:9 for desktop */}
                   <iframe
-                    src={pdfUrl}
+                    src={getSecureFileUrl(pdfUrl)}
                     title="Vista PDF"
                     className="absolute top-0 left-0 w-full h-full rounded-lg shadow-inner border border-gray-300 dark:border-gray-600"
                     allowFullScreen
