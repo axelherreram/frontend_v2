@@ -1,4 +1,4 @@
-import { Link} from "react-router-dom"
+import { Link } from "react-router-dom"
 import DropdownNotification from "./DropdownNotification"
 import DropdownUser from "./DropdownUser"
 import SedeSelector from "../Selectors/HeadquartersSelector"
@@ -71,7 +71,7 @@ const Header = (props: {
 
         {/* <!-- Sede selector for role 5 (Coordinador General) --> */}
         {role === "5" && (
-          <SedeSelector/>
+          <SedeSelector />
         )}
 
         {/* <!-- Spacer when role is not 5 --> */}
@@ -83,7 +83,7 @@ const Header = (props: {
             {/* <!-- Dark Mode Switcher --> */}
             <DarkModeSwitcher />
             {/* <!-- Notification Dropdown (only for Estudiante and Administrador) --> */}
-            {(role === "1" || role === "3") && <DropdownNotification />}
+            {/* {(role === "1" || role === "3") && <DropdownNotification />} */}
           </ul>
           {/* <!-- User Menu --> */}
           <DropdownUser />
